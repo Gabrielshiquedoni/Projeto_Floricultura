@@ -1,0 +1,38 @@
+### 1. LISTAR TODOS OS PRODUTOS (Sua Vitrine)
+GET http://localhost:3000/produtos
+
+
+### 2. BUSCAR UM ÚNICO PRODUTO (Ex: Produto de ID 1)
+GET http://localhost:3000/produtos/1
+
+
+### 3. CADASTRAR UM NOVO PRODUTO
+POST http://localhost:3000/produtos
+Content-Type: application/json
+
+{
+  "nome": "Cesta de Flores do Campo",
+  "descricao": "Cesta rústica ideal para presentes de aniversário.",
+  "preco": 145.90,
+  "imagem_url": "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=500",
+  "estoque": 12,
+  "fk_id_categoria": 2
+}
+
+
+### 4. ATUALIZAR UM PRODUTO (Mudando o preço do produto 1 devido à inflação)
+PUT http://localhost:3000/produtos/1
+Content-Type: application/json
+
+{
+  "nome": "Buquê de Rosas Vermelhas (Premium)",
+  "descricao": "Clássico buquê com 12 rosas selecionadas.",
+  "preco": 150.00,
+  "imagem_url": "https://images.unsplash.com/photo-1591886960571-146e4b85c197?w=500",
+  "estoque": 5,
+  "fk_id_categoria": 1
+}
+
+
+### 5. DELETAR UM PRODUTO (Excluir o produto de ID 2)
+DELETE http://localhost:3000/produtos/3
