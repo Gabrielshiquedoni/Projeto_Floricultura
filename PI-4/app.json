@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "CRUD Usuários",
+    "slug": "node-sqlite-crud",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nodesqlitecrud.app"
+    },
+    "android": {
+      "package": "com.nodesqlitecrud.app"
+    }
+  }
+}
