@@ -1,209 +1,124 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   FlatList,
+  Image,
   TouchableOpacity,
   StyleSheet,
-  StatusBar,
-  RefreshControl,
-  Alert,
+  ScrollView,
   ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
-
-import UsuarioCard from '../components/UsuarioCard';
-import UsuarioForm from '../components/UsuarioForm';
-import {
-  getAllUsuarios,
-  createUsuario,
-  updateUsuario,
-  deleteUsuario,
-  initDatabase
-} from '../services/database';
+import ContainerSecao from '../components/ContainerSecao';
+import Rodape from '../components/Rodape';
+import MenuOverlay from '../components/MenuOverlay';
 
 export default function HomeScreen({ navigation }) {
-  
-  const [usuarios, setUsuarios] = useState([]);
+  const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   useEffect(() => {
-    inicializarApp();
+    carregarProdutos();
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      carregarUsuarios();
-    }, [])
-  );
-
-  const inicializarApp = async () => {
+  const carregarProdutos = async () => {
     try {
-      await initDatabase();
-      await carregarUsuarios();
+      const response = await fetch("http://192.168.X.X:3000/produtos");
+      const data = await response.json();
+      setProdutos(data);
     } catch (error) {
-      console.error('Erro ao inicializar app:', error);
-      Alert.alert('Erro', 'Erro ao inicializar aplicativo');
-    }
-  };
-
-  const carregarUsuarios = async () => {
-    try {
-      setLoading(true);
-      const dados = await getAllUsuarios();
-      setUsuarios(dados);
-    } catch (error) {
-      console.error('Erro ao carregar usuários:', error);
-      Alert.alert('Erro', 'Não foi possível carregar os usuários');
+      console.error("Erro ao carregar produtos:", error);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
-  const handleRefresh = () => {
-    setRefreshing(true);
-    carregarUsuarios();
-  };
+  // Filtros de exemplo — vamos ajustar depois conforme seu backend
+  const promocoes = produtos.slice(0, 3);
+  const maisVendidos = produtos.slice(3, 6);
 
-  const handleNovoUsuario = () => {
-    setUsuarioSelecionado(null);
-    setModalVisible(true);
-  };
-
-  const handleEditarUsuario = (usuario) => {
-    setUsuarioSelecionado(usuario);
-    setModalVisible(true);
-  };
-
-  const handleSalvarUsuario = async (dados) => {
-    try {
-      if (dados.id) {
-        // Atualizar usuário existente
-        const sucesso = await updateUsuario(dados.id, dados.nome, dados.email, dados.idade);
-        if (sucesso) {
-          Alert.alert('Sucesso', 'Usuário atualizado com sucesso!');
-          await carregarUsuarios();
-        } else {
-          throw new Error('Usuário não encontrado');
-        }
-      } else {
-        // Criar novo usuário
-        await createUsuario(dados.nome, dados.email, dados.idade);
-        Alert.alert('Sucesso', 'Usuário criado com sucesso!');
-        await carregarUsuarios();
-      }
-    } catch (error) {
-      console.error('Erro ao salvar usuário:', error);
-      
-      if (error.message && error.message.includes('UNIQUE constraint failed')) {
-        throw new Error('Este email já está cadastrado');
-      } else {
-        throw new Error('Erro ao salvar usuário');
-      }
-    }
-  };
-
-  const handleDeletarUsuario = async (id) => {
-    try {
-      const sucesso = await deleteUsuario(id);
-      if (sucesso) {
-        Alert.alert('Sucesso', 'Usuário excluído com sucesso!');
-        await carregarUsuarios();
-      } else {
-        Alert.alert('Erro', 'Usuário não encontrado');
-      }
-    } catch (error) {
-      console.error('Erro ao deletar usuário:', error);
-      Alert.alert('Erro', 'Não foi possível excluir o usuário');
-    }
-  };
-
-  const handleVisualizarUsuario = (usuario) => {
-    navigation.navigate('UsuarioDetail', { usuario });
-  };
-
-  const renderUsuario = ({ item }) => (
-    <UsuarioCard
-      usuario={item}
-      onPress={handleVisualizarUsuario}
-      onEdit={handleEditarUsuario}
-      onDelete={handleDeletarUsuario}
-    />
-  );
-
-  const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
-      <Ionicons name="person-add-outline" size={80} color="#ccc" />
-      <Text style={styles.emptyText}>Nenhum usuário cadastrado</Text>
-      <Text style={styles.emptySubtext}>
-        Toque no botão + para adicionar seu primeiro usuário
-      </Text>
-    </View>
-  );
-
-  if (loading && !refreshing) {
+  if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2196F3" />
-        <Text style={styles.loadingText}>Carregando...</Text>
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 10 }}>Carregando catálogo...</Text>
       </View>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <View>
-            <Text style={styles.headerTitle}>Usuários</Text>
-            <Text style={styles.headerSubtitle}>
-              {usuarios.length} {usuarios.length === 1 ? 'cadastrado' : 'cadastrados'}
-            </Text>
-          </View>
-          <TouchableOpacity 
-            style={styles.debugButton}
-            onPress={() => navigation.navigate('DatabaseDebug')}
-          >
-            <Ionicons name="bug-outline" size={20} color="#666" />
+      <ScrollView>
+
+        {/* Header */}
+        <View style={styles.header}>
+          <Image
+          source={require('../../assets/images/LogoSemFundo.png')}
+          style={styles.logo}
+          />
+          <Text style={styles.logoText}>Jardim Encantado</Text>
+
+          <TouchableOpacity onPress={() => navigation.navigate("Carrinho")}>
+            <Ionicons name="cart-outline" size={26} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setMenuVisible(true)}>
+            <Ionicons name="menu" size={28} color="#fff" />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity 
-          style={styles.addButton}
-          onPress={handleNovoUsuario}
-        >
-          <Ionicons name="add" size={28} color="#fff" />
-        </TouchableOpacity>
-      </View>
 
-      <FlatList
-        data={usuarios}
-        renderItem={renderUsuario}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={usuarios.length === 0 ? styles.emptyList : styles.list}
-        ListEmptyComponent={renderEmpty}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={['#2196F3']}
+        {/* Banner */}
+        <Image
+          source={require('../../assets/images/foto1.carrossel.jpg')}
+          style={styles.banner}
+        />
+
+        {/* PROMOÇÕES */}
+        <ContainerSecao>
+          <Text style={styles.sectionTitle}>Promoções</Text>
+
+          <FlatList
+            data={promocoes}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id_produto.toString()}
+            renderItem={({ item }) => (
+              <ProductCard
+                image={'../../'}
+                price={item.preco}
+              />
+            )}
+            contentContainerStyle={{ paddingRight: 10 }}
           />
-        }
-      />
+        </ContainerSecao>
 
-      <UsuarioForm
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onSave={handleSalvarUsuario}
-        usuario={usuarioSelecionado}
-      />
+        {/* MAIS VENDIDOS */}
+        <ContainerSecao>
+          <Text style={styles.sectionTitle}>Mais vendidos</Text>
+
+          <FlatList
+            data={promocoes}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id_produto.toString()}
+            renderItem={({ item }) => (
+              <ProductCard
+                image={{ uri: item.imagem_url }}
+                price={item.preco}
+              />
+            )}
+            contentContainerStyle={{ paddingRight: 10 }}
+          />
+        </ContainerSecao>
+        
+        <Rodape/>
+
+        {menuVisible && (
+          <MenuOverlay onClose={() => setMenuVisible(false)} />
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -211,84 +126,92 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#141B18", // fundo claro igual ao Figma
   },
-  loadingContainer: {
+
+  loading: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
   },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#666',
-  },
+
+  /* ================= HEADER ================= */
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    backgroundColor: "#1B1F1D",
+    paddingVertical: 18,
     paddingHorizontal: 20,
-    paddingVertical: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
-  debugButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#f5f5f5',
-  },
-  addButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#2196F3',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowRadius: 3,
   },
-  list: {
-    paddingVertical: 8,
+
+  logoText: {
+    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "600",
+    letterSpacing: 0.5,
   },
-  emptyList: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+
+  logo: {
+    width: 40,
+    height: 40,
   },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 40,
+
+  /* ================= BANNER ================= */
+  banner: {
+    width: "100%",
+    height: 200,
+    borderRadius: 16,
+    marginTop: 18,
+    alignSelf: "center",
+    resizeMode: "cover",
   },
-  emptyText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#999',
-    marginTop: 16,
+
+  /* ================= SECTIONS ================= */
+  sectionTitle: {
+  color: "#FFFFFF",
+  fontSize: 18,
+  fontWeight: "bold",
+  textAlign: "center",
+  marginBottom: 16,
+},
+
+  sectionContainer: {
+    backgroundColor: "#ffffff",
   },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#bbb',
-    marginTop: 8,
-    textAlign: 'center',
+
+  /* ================= CARD DE PRODUTO ================= */
+  card: {
+    backgroundColor: "#FFFFFF",
+    width: 160,
+    marginHorizontal: 12,
+    borderRadius: 18,
+    padding: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 4,
+    alignItems: "center",
   },
+
+  cardImage: {
+    width: 135,
+    height: 135,
+    borderRadius: 14,
+    marginBottom: 10,
+  },
+
+  cardPrice: {
+    marginTop: 6,
+    fontWeight: "700",
+    fontSize: 16,
+    color: "#1B1F1D",
+  }
 });
