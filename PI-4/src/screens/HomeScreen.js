@@ -14,11 +14,19 @@ import { Ionicons } from '@expo/vector-icons';
 import ContainerSecao from '../components/ContainerSecao';
 import Rodape from '../components/Rodape';
 import MenuOverlay from '../components/MenuOverlay';
+import { useNavigation } from '@react-navigation/native';
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen() {
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const navigation = useNavigation();
+  
+  const goToHome = () => {
+    navigation.navigate('Home');  
+    onClose();                    
+  };
 
   useEffect(() => {
     carregarProdutos();
@@ -55,12 +63,15 @@ export default function HomeScreen({ navigation }) {
 
         {/* Header */}
         <View style={styles.header}>
-          <Image
-          source={require('../../assets/images/LogoSemFundo.png')}
-          style={styles.logo}
-          />
-          <Text style={styles.logoText}>Jardim Encantado</Text>
-
+          <TouchableOpacity onPress={goToHome}>
+            <Image
+              source={require('../../assets/images/LogoSemFundo.png')}
+              style={styles.logo}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={goToHome}>
+            <Text style={styles.logoText}>Jardim Encantado</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate("Carrinho")}>
             <Ionicons name="cart-outline" size={26} color="#fff" />
           </TouchableOpacity>
@@ -86,7 +97,7 @@ export default function HomeScreen({ navigation }) {
             keyExtractor={(item) => item.id_produto.toString()}
             renderItem={({ item }) => (
               <ProductCard
-                image={'../../'}
+                image={require('../../assets/images/rosa7.jpeg')}
                 price={item.preco}
               />
             )}

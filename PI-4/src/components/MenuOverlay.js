@@ -1,27 +1,56 @@
-import React from "react";
+import { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
 export default function MenuOverlay({ onClose }) {
+  const navigation = useNavigation();
+
+  const goToHome = () => {
+    navigation.navigate('Home');
+    onClose();                    
+  };
   return (
+    
     <View style={styles.overlay}>
       <View style={styles.container}>
 
         {/* LOGO + TÍTULO */}
         <View style={styles.header}>
-          <Image
-            source={require("../../assets/images/LogoSemFundo.png")}
-            style={styles.logo}
-          />
-          <Text style={styles.title}>Jardim Encantado</Text>
+          <TouchableOpacity onPress={goToHome}>
+            <Image
+              source={require("../../assets/images/LogoSemFundo.png")}
+              style={styles.logo}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={goToHome}>
+            <Text style={styles.title}>Jardim Encantado</Text>
+          </TouchableOpacity>
         </View>
 
         {/* MENU ITEMS */}
         <View style={styles.menuList}>
-          <Text style={styles.menuItem}>Inicio</Text>
-          <Text style={styles.menuItem}>Buquês</Text>
-          <Text style={styles.menuItem}>Conjuntos</Text>
-          <Text style={styles.menuItem}>Mudas</Text>
+          <TouchableOpacity onPress={goToHome}>
+            <Text style={styles.menuItem}>Inicio</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            navigation.navigate('Buques')
+            onClose();
+          }}>
+            <Text style={styles.menuItem}>Buquês</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            navigation.navigate('Conjuntos')
+            onClose();
+          }}>
+            <Text style={styles.menuItem}>Conjuntos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            navigation.navigate('Mudas')
+            onClose();
+          }}>
+            <Text style={styles.menuItem}>Mudas</Text>
+          </TouchableOpacity>
           <Text style={styles.menuItem}>Personalizados</Text>
         </View>
 
@@ -52,13 +81,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     backgroundColor: "rgba(0,0,0,0.6)",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
   },
 
   container: {
     width: "85%",
-    height: "95%",
+    height: "100%",
     backgroundColor: "#101615",
     borderRadius: 12,
     paddingHorizontal: 25,
