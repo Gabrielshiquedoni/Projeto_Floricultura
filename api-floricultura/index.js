@@ -26,15 +26,17 @@ app.get('/produtos/:id', (req, res) => {
 });
 
 app.post('/produtos', (req, res) => {
-    const { nome, descricao, preco, imagem_url, estoque, fk_id_categoria } = req.body;
+    // Agora recebemos o campo em_promocao do telemóvel
+    const { nome, descricao, preco, imagem_url, estoque, fk_id_categoria, em_promocao } = req.body;
     if (!nome || !preco) return res.status(400).json({ erro: "Nome e Preço são obrigatórios." });
 
     db.run(
-        "INSERT INTO produtos (nome, descricao, preco, imagem_url, estoque, fk_id_categoria) VALUES (?, ?, ?, ?, ?, ?)",
-        [nome, descricao, preco, imagem_url, estoque, fk_id_categoria],
+        "INSERT INTO produtos (nome, descricao, preco, imagem_url, estoque, fk_id_categoria, em_promocao) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        // Se o front não mandar nada, assumimos 0 (Não é promoção)
+        [nome, descricao, preco, imagem_url, estoque, fk_id_categoria, em_promocao || 0],
         function(err) {
             if (err) return res.status(500).json({ erro: "Falha na inserção do banco." });
-            res.status(201).json({ mensagem: "Flor cadastrada com sucesso!", id_produto: this.lastID });
+            res.status(201).json({ mensagem: "Flor registada com sucesso!", id_produto: this.lastID });
         }
     );
 });

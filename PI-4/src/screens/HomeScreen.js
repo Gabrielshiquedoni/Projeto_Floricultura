@@ -9,11 +9,13 @@ import {
   ScrollView,
   ActivityIndicator
 } from 'react-native';
+import Constants from 'expo-constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import ContainerSecao from '../components/ContainerSecao';
 import Rodape from '../components/Rodape';
 import MenuOverlay from '../components/MenuOverlay';
+import ProdutoCard from '../components/ProdutoCard'; 
 import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen() {
@@ -24,8 +26,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   
   const goToHome = () => {
-    navigation.navigate('Home');  
-    onClose();                    
+    navigation.navigate('Home'); 
   };
 
   useEffect(() => {
@@ -34,7 +35,13 @@ export default function HomeScreen() {
 
   const carregarProdutos = async () => {
     try {
-      const response = await fetch("http://192.168.X.X:3000/produtos");
+      // Pega o IP do computador do professor ou o seu pelo Wi-Fi
+      const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
+      const ipComputador = hostUri ? hostUri.split(':')[0] : 'localhost';
+      
+      const urlApi = `http://${ipComputador}:3000/produtos`;
+
+      const response = await fetch(urlApi);
       const data = await response.json();
       setProdutos(data);
     } catch (error) {
@@ -44,14 +51,20 @@ export default function HomeScreen() {
     }
   };
 
-  // Filtros de exemplo — vamos ajustar depois conforme seu backend
-  const promocoes = produtos.slice(0, 3);
-  const maisVendidos = produtos.slice(3, 6);
+  // 1. PROMOÇÕES: Pega EXCLUSIVAMENTE quem tem o "1" no banco de dados
+  const promocoes = produtos.filter(item => item.em_promocao === 1);
+  
+  // 2. MAIS VENDIDOS: Como não temos um histórico real de vendas ainda, 
+  // pegamos alguns itens que NÃO estão em promoção para encher a vitrine
+  const maisVendidos = produtos.filter(item => item.em_promocao === 0).slice(0, 5);
+  
+  // 3. NOVIDADES: Os últimos que deram entrada no banco
+  const novidades = [...produtos].reverse().slice(0, 4);
 
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#00ff00" />
         <Text style={{ marginTop: 10 }}>Carregando catálogo...</Text>
       </View>
     );
@@ -89,18 +102,20 @@ export default function HomeScreen() {
         {/* PROMOÇÕES */}
         <ContainerSecao>
           <Text style={styles.sectionTitle}>Promoções</Text>
-
           <FlatList
             data={promocoes}
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.id_produto.toString()}
-            renderItem={({ item }) => (
-              <ProductCard
-                image={require('../../assets/images/rosa7.jpeg')}
-                price={item.preco}
-              />
-            )}
+            renderItem={({ item }) => {
+              // Regra de Negócio: Preço formatado e Foto de fallback
+              const precoFormatado = Number(item.preco).toFixed(2).replace('.', ',');
+              const imagemSegura = item.imagem_url && item.imagem_url.length > 5
+                ? { uri: item.imagem_url }
+                : require('../../assets/images/LogoSemFundo.png');
+
+              return <ProdutoCard image={imagemSegura} price={precoFormatado} />;
+            }}
             contentContainerStyle={{ paddingRight: 10 }}
           />
         </ContainerSecao>
@@ -108,18 +123,39 @@ export default function HomeScreen() {
         {/* MAIS VENDIDOS */}
         <ContainerSecao>
           <Text style={styles.sectionTitle}>Mais vendidos</Text>
-
           <FlatList
-            data={promocoes}
+            data={maisVendidos}
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.id_produto.toString()}
-            renderItem={({ item }) => (
-              <ProductCard
-                image={{ uri: item.imagem_url }}
-                price={item.preco}
-              />
-            )}
+            renderItem={({ item }) => {
+              const precoFormatado = Number(item.preco).toFixed(2).replace('.', ',');
+              const imagemSegura = item.imagem_url && item.imagem_url.length > 5
+                ? { uri: item.imagem_url }
+                : require('../../assets/images/LogoSemFundo.png');
+
+              return <ProdutoCard image={imagemSegura} price={precoFormatado} />;
+            }}
+            contentContainerStyle={{ paddingRight: 10 }}
+          />
+        </ContainerSecao>
+
+        {/* NOVIDADES (Lançamentos) */}
+        <ContainerSecao>
+          <Text style={styles.sectionTitle}>Novidades</Text>
+          <FlatList
+            data={novidades}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id_produto.toString()}
+            renderItem={({ item }) => {
+              const precoFormatado = Number(item.preco).toFixed(2).replace('.', ',');
+              const imagemSegura = item.imagem_url && item.imagem_url.length > 5
+                ? { uri: item.imagem_url }
+                : require('../../assets/images/LogoSemFundo.png');
+
+              return <ProdutoCard image={imagemSegura} price={precoFormatado} />;
+            }}
             contentContainerStyle={{ paddingRight: 10 }}
           />
         </ContainerSecao>
@@ -137,7 +173,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#141B18", // fundo claro igual ao Figma
+    backgroundColor: "#141B18", 
   },
 
   loading: {
@@ -147,7 +183,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
 
-  /* ================= HEADER ================= */
   header: {
     backgroundColor: "#1B1F1D",
     paddingVertical: 18,
@@ -174,7 +209,6 @@ const styles = StyleSheet.create({
     height: 40,
   },
 
-  /* ================= BANNER ================= */
   banner: {
     width: "100%",
     height: 200,
@@ -184,20 +218,18 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
 
-  /* ================= SECTIONS ================= */
   sectionTitle: {
-  color: "#FFFFFF",
-  fontSize: 18,
-  fontWeight: "bold",
-  textAlign: "center",
-  marginBottom: 16,
-},
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 16,
+  },
 
   sectionContainer: {
     backgroundColor: "#ffffff",
   },
 
-  /* ================= CARD DE PRODUTO ================= */
   card: {
     backgroundColor: "#FFFFFF",
     width: 160,

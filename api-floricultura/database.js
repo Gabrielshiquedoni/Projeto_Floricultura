@@ -10,7 +10,7 @@ const db = new sqlite3.Database('./floricultura.db', (err) => {
             db.run(`CREATE TABLE IF NOT EXISTS categorias (id_categoria INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, descricao TEXT)`);
             
             // 2. Produtos
-            db.run(`CREATE TABLE IF NOT EXISTS produtos (id_produto INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, descricao TEXT, preco REAL NOT NULL, imagem_url TEXT, estoque INTEGER, fk_id_categoria INTEGER, FOREIGN KEY (fk_id_categoria) REFERENCES categorias (id_categoria))`);
+            db.run(`CREATE TABLE IF NOT EXISTS produtos (id_produto INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, descricao TEXT, preco REAL NOT NULL, imagem_url TEXT, estoque INTEGER, em_promocao INTEGER DEFAULT 0, fk_id_categoria INTEGER, FOREIGN KEY (fk_id_categoria) REFERENCES categorias (id_categoria))`);
             
             // 3. Usuários 
             db.run(`CREATE TABLE IF NOT EXISTS usuarios (id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, email TEXT NOT NULL UNIQUE, senha TEXT, tipo TEXT, cpf TEXT, tel TEXT, data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP)`);
