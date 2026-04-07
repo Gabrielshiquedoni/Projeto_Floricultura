@@ -1,35 +1,44 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function ProdutoCard({ image, price }) {
+export default function ProdutoCard({ image, price, onPress }) {
   return (
-    <View style={styles.card}>
-      <Image source={image} style={styles.image} />
-
-      <Text style={styles.price}>R$ {price}</Text>
-    </View>
+    // Transformamos a View em TouchableOpacity e passamos a função onPress
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      <Image
+        source={image}
+        style={styles.cardImage}
+        resizeMode="cover"
+      />
+      <Text style={styles.cardPrice}>R$ {price}</Text>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    width: 150,
-    backgroundColor: "#E5E5E5",
+    backgroundColor: "#FFFFFF",
+    width: 160,
+    marginHorizontal: 12,
     borderRadius: 18,
     padding: 12,
-    marginRight: 14,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 4,
     alignItems: "center",
   },
-
-  image: {
-    width: "100%",
-    height: 120,
+  cardImage: {
+    width: 135,
+    height: 135,
     borderRadius: 14,
+    marginBottom: 10,
   },
-
-  price: {
-    marginTop: 12,
-    fontWeight: "bold",
+  cardPrice: {
+    marginTop: 6,
+    fontWeight: "700",
     fontSize: 16,
-  }
+    color: "#1B1F1D",
+  },
 });

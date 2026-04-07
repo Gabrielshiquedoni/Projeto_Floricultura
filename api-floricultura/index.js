@@ -1,10 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./database');
+const path = require('path'); // <-- 1. INJETADO AQUI NO TOPO
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// <-- 2. INJETADO AQUI (Antes das rotas)
+// Transforma a pasta 'images' num servidor público de arquivos estáticos
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // ==========================================
 // ROTAS DE PRODUTOS

@@ -15,8 +15,10 @@ export default function BuqueScreen() {
   const [menuVisible, setMenuVisible] = useState(false);
 
   const navigation = useNavigation();
-  
   const goToHome = () => navigation.navigate('Home');
+
+  const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
+  const ipComputador = hostUri ? hostUri.split(':')[0] : 'localhost';
 
   useEffect(() => {
     carregarProdutos();
@@ -24,17 +26,12 @@ export default function BuqueScreen() {
 
   const carregarProdutos = async () => {
     try {
-      const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
-      const ipComputador = hostUri ? hostUri.split(':')[0] : 'localhost';
       const urlApi = `http://${ipComputador}:3000/produtos`;
-
       const response = await fetch(urlApi);
       const data = await response.json();
       
-      // A PENEIRA: Guarda apenas os itens que são Buquês (ID 1)
       const apenasBuques = data.filter(item => item.fk_id_categoria === 1);
       setProdutos(apenasBuques);
-
     } catch (error) {
       console.error("Erro ao carregar buquês:", error);
     } finally {
@@ -42,14 +39,8 @@ export default function BuqueScreen() {
     }
   };
 
-  // 1. PROMOÇÕES: Pega EXCLUSIVAMENTE quem tem o "1" no banco de dados
   const promocoes = produtos.filter(item => item.em_promocao === 1);
-  
-  // 2. MAIS VENDIDOS: Como não temos um histórico real de vendas ainda, 
-  // pegamos alguns itens que NÃO estão em promoção para encher a vitrine
   const maisVendidos = produtos.filter(item => item.em_promocao === 0).slice(0, 5);
-  
-  // 3. NOVIDADES: Os últimos que deram entrada no banco
   const novidades = [...produtos].reverse().slice(0, 4);
 
   if (loading) {
@@ -61,27 +52,47 @@ export default function BuqueScreen() {
     );
   }
 
-  // Função auxiliar para renderizar os cards com segurança
   const renderItem = ({ item }) => {
     const precoFormatado = Number(item.preco).toFixed(2).replace('.', ',');
-    const imagemSegura = item.imagem_url && item.imagem_url.length > 5
-      ? { uri: item.imagem_url }
+    const urlDaImagemReal = `http://${ipComputador}:3000/images/${item.imagem_url}`;
+
+    const imagemSegura = item.imagem_url && item.imagem_url.length > 4
+      ? { uri: urlDaImagemReal }
       : require('../../assets/images/LogoSemFundo.png');
-    return <ProdutoCard image={imagemSegura} price={precoFormatado} />;
+      
+    return (
+      <ProdutoCard 
+        image={imagemSegura} 
+        price={precoFormatado} 
+        // A MÁGICA DA NAVEGAÇÃO
+        onPress={() => {
+          // Aqui nós mandamos o aplicativo ir para a tela 'Produto' 
+          // e levamos todos os dados do banco junto no pacote 'item'
+          navigation.navigate('Produto', {
+             produtoData: {
+                id: item.id_produto,
+                nome: item.nome,
+                descricao: item.descricao,
+                preco: precoFormatado,
+                imagem: imagemSegura
+             }
+          });
+        }}
+      />
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={goToHome}>
             <Image source={require('../../assets/images/LogoSemFundo.png')} style={styles.logo} />
           </TouchableOpacity>
           <TouchableOpacity onPress={goToHome}>
-            <Text style={styles.logoText}>Setor de Buquês</Text>
+            <Text style={styles.logoText}>Jardim Encantado</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("CarrinhoVazio")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Carrinho")}>
             <Ionicons name="cart-outline" size={26} color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setMenuVisible(true)}>
@@ -89,7 +100,6 @@ export default function BuqueScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Banner Específico (pode trocar a foto depois se quiser) */}
         <Image source={require('../../assets/images/foto1.carrossel.jpg')} style={styles.banner} />
 
         <ContainerSecao>
