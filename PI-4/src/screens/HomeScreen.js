@@ -85,7 +85,7 @@ export default function HomeScreen() {
           <TouchableOpacity onPress={goToHome}>
             <Text style={styles.logoText}>Jardim Encantado</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Carrinho")}>
+          <TouchableOpacity onPress={() => navigation.navigate("CarrinhoComItem")}>
             <Ionicons name="cart-outline" size={26} color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setMenuVisible(true)}>

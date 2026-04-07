@@ -10,6 +10,13 @@ import DatabaseDebugScreen from './src/screens/DatabaseDebugScreen';
 import BuqueScreen from './src/screens/BuqueScreen';
 import ConjuntoScreen from './src/screens/ConjuntoScreen';
 import MudaScreen from './src/screens/MudaScreen';
+import PersonalizadosScreen from './src/screens/PersonalizadosScreen';
+import CarrinhoComItem from './src/screens/CarrinhoComItemScreen';
+import ConfirmarEntrega from './src/screens/ConfirmarEntregaScreen';
+import CheckoutPagamento from './src/screens/CheckoutPagamentoScreen';
+import Revisao from './src/screens/RevisaoScreen';
+import Pagamento from './src/screens/PagamentoScreen';
+import CarrinhoVazio from './src/screens/CarrinhoVazioScreen';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +34,13 @@ export default function App() {
           <Stack.Screen name="Buques" component={BuqueScreen} />
           <Stack.Screen name="Conjuntos" component={ConjuntoScreen} />
           <Stack.Screen name="Mudas" component={MudaScreen} />
+          <Stack.Screen name="Personalizados" component={PersonalizadosScreen} />
+          <Stack.Screen name="CarrinhoComItem" component={CarrinhoComItem} />
+          <Stack.Screen name="ConfirmarEntrega" component={ConfirmarEntrega} />
+          <Stack.Screen name="CheckoutPagamento" component={CheckoutPagamento} />
+          <Stack.Screen name="Revisao" component={Revisao} />
+          <Stack.Screen name="Pagamento" component={Pagamento} />
+          <Stack.Screen name="CarrinhoVazio" component={CarrinhoVazio} />
           <Stack.Screen name="DatabaseDebug" component={DatabaseDebugScreen} />
         </Stack.Navigator>
       </NavigationContainer>

@@ -81,7 +81,7 @@ export default function BuqueScreen() {
           <TouchableOpacity onPress={goToHome}>
             <Text style={styles.logoText}>Setor de Buquês</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Carrinho")}>
+          <TouchableOpacity onPress={() => navigation.navigate("CarrinhoVazio")}>
             <Ionicons name="cart-outline" size={26} color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setMenuVisible(true)}>

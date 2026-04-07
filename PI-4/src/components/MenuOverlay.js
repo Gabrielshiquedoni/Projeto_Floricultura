@@ -51,7 +51,12 @@ export default function MenuOverlay({ onClose }) {
           }}>
             <Text style={styles.menuItem}>Mudas</Text>
           </TouchableOpacity>
-          <Text style={styles.menuItem}>Personalizados</Text>
+          <TouchableOpacity onPress={() => {
+            navigation.navigate('Personalizados')
+            onClose();
+          }}>
+            <Text style={styles.menuItem}>Personalizados</Text>
+          </TouchableOpacity>
         </View>
 
         {/* ÍCONES INFERIORES */}
