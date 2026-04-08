@@ -1,25 +1,16 @@
 import React, { createContext, useState } from 'react';
 
-// ==========================================
-// A BLINDAGEM: Se a Home não achar o Provider, 
-// ela usa esses valores falsos e NÃO CRASHA.
-// ==========================================
-export const CartContext = createContext({
-  carrinho: [],
-  adicionarAoCarrinho: (produto) => {
-    alert("ERRO DE INFRAESTRUTURA: A Nuvem não está envelopando o App.js!");
-  },
-  removerDoCarrinho: () => {},
-  limparCarrinho: () => {}
-});
+// Criamos a "Nuvem" de dados do carrinho
+export const CartContext = createContext();
 
-// A Nuvem Real
 export const CartProvider = ({ children }) => {
   const [carrinho, setCarrinho] = useState([]);
 
+  // Função para adicionar (se já existir, soma a quantidade)
   const adicionarAoCarrinho = (produto) => {
     setCarrinho((carrinhoAtual) => {
       const itemExiste = carrinhoAtual.find(item => item.id_produto === produto.id_produto);
+      
       if (itemExiste) {
         return carrinhoAtual.map(item => 
           item.id_produto === produto.id_produto 
@@ -32,10 +23,12 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  // Função para remover um item por completo
   const removerDoCarrinho = (id_produto) => {
     setCarrinho((carrinhoAtual) => carrinhoAtual.filter(item => item.id_produto !== id_produto));
   };
 
+  // Esvazia o carrinho (usado após a compra)
   const limparCarrinho = () => setCarrinho([]);
 
   return (

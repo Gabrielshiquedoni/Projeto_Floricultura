@@ -18,18 +18,18 @@ import Revisao from './src/screens/RevisaoScreen';
 import Pagamento from './src/screens/PagamentoScreen';
 import CarrinhoVazio from './src/screens/CarrinhoVazioScreen';
 
+// 1. A Importação da Nuvem (agora o caminho está certo)
+import { CartProvider } from './src/contexts/CartContext';
+
 const Stack = createStackNavigator();
 
-export default function App() {
+// 2. Isolamos as rotas
+function MainApp() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
         <StatusBar style="auto" />
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Buques" component={BuqueScreen} />
           <Stack.Screen name="Conjuntos" component={ConjuntoScreen} />
@@ -45,5 +45,14 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
+  );
+}
+
+// 3. Abraçamos o App com o Provedor do Carrinho
+export default function App() {
+  return (
+    <CartProvider>
+      <MainApp />
+    </CartProvider>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,  useContext } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import Constants from 'expo-constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import Rodape from '../components/Rodape';
 import MenuOverlay from '../components/MenuOverlay';
 import ProdutoCard from '../components/ProdutoCard'; 
 import { useNavigation } from '@react-navigation/native';
+import { CartContext } from '../contexts/CartContext';
 
 export default function HomeScreen() {
   const [produtos, setProdutos] = useState([]);
@@ -16,6 +17,7 @@ export default function HomeScreen() {
 
   const navigation = useNavigation();
   const goToHome = () => navigation.navigate('Home');
+  const { adicionarAoCarrinho } = useContext(CartContext);
 
   // IP Dinâmico para as Imagens (MANTIDO)
   const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
@@ -68,8 +70,8 @@ export default function HomeScreen() {
         image={imagemSegura} 
         price={precoFormatado} 
         onPress={() => {
-          // Ação segura: não crasha e mostra que o clique existe
-          alert(`Você clicou em: ${item.nome}`);
+          adicionarAoCarrinho(item); // Envia pro contexto global
+          alert(`🌿 ${item.nome} adicionado ao carrinho!`);
         }}
       />
     );
