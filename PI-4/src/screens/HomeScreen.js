@@ -1,14 +1,15 @@
-import React, { useEffect, useState,  useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import Constants from 'expo-constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+// 1. IMPORTAÇÃO DO FEATHER ADICIONADA AQUI:
+import { Ionicons, Feather } from '@expo/vector-icons'; 
 import ContainerSecao from '../components/ContainerSecao';
-import Rodape from '../components/Rodape';
 import MenuOverlay from '../components/MenuOverlay';
 import ProdutoCard from '../components/ProdutoCard'; 
 import { useNavigation } from '@react-navigation/native';
 import { CartContext } from '../contexts/CartContext';
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function HomeScreen() {
   const [produtos, setProdutos] = useState([]);
@@ -18,7 +19,8 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const goToHome = () => navigation.navigate('Home');
   const { adicionarAoCarrinho } = useContext(CartContext);
-
+  const { openAuthModal } = useContext(AuthContext);
+  
   // IP Dinâmico para as Imagens (MANTIDO)
   const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
   const ipComputador = hostUri ? hostUri.split(':')[0] : 'localhost';
@@ -70,7 +72,6 @@ export default function HomeScreen() {
         image={imagemSegura} 
         price={precoFormatado} 
         onPress={() => {
-          // Agora ele navega de verdade e leva os dados na mala
           navigation.navigate('Produto', { produtoData: item });
         }}
       />
@@ -79,22 +80,37 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={goToHome}>
+      
+      {/* 2. O CABEÇALHO AGORA ESTÁ FORA DO SCROLLVIEW PARA FICAR FIXO NO TOPO */}
+      <View style={styles.header}>
+        {/* ESQUERDA: Logo + Usuário */}
+        <View style={styles.headerSide}>
+          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Image source={require('../../assets/images/LogoSemFundo.png')} style={styles.logo} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={goToHome}>
-            <Text style={styles.logoText}>Jardim Encantado</Text>
+          {/* 3. AQUI O BOTÃO CHAMA O POP-UP CORRETAMENTE */}
+          <TouchableOpacity onPress={() => openAuthModal('login')} style={{ marginLeft: 15 }}>
+            <Feather name="user" size={24} color="#00ff00" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("CarrinhoComItem")}>
+        </View>
+
+        {/* CENTRO: Título */}
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.logoText}>Jardim Encantado</Text>
+        </TouchableOpacity>
+
+        {/* DIREITA: Carrinho + Menu */}
+        <View style={[styles.headerSide, { justifyContent: 'flex-end' }]}>
+          <TouchableOpacity onPress={() => navigation.navigate('CarrinhoComItem')} style={{ marginRight: 15 }}>
             <Ionicons name="cart-outline" size={26} color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setMenuVisible(true)}>
             <Ionicons name="menu" size={28} color="#fff" />
           </TouchableOpacity>
         </View>
+      </View>
 
+      <ScrollView>
         <Image source={require('../../assets/images/foto1.carrossel.jpg')} style={styles.banner} />
 
         <ContainerSecao>
@@ -112,18 +128,19 @@ export default function HomeScreen() {
           <FlatList data={novidades} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item.id_produto.toString()} renderItem={renderItem} contentContainerStyle={{ paddingRight: 10 }} />
         </ContainerSecao>
         
-        <Rodape/>
         {menuVisible && <MenuOverlay onClose={() => setMenuVisible(false)} />}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+// 4. CSS LIMPO (SEM DUPLICATAS)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#141B18" },
   loading: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" },
-  header: { backgroundColor: "#1B1F1D", paddingVertical: 18, paddingHorizontal: 20, flexDirection: "row", justifyContent: "space-between", alignItems: "center", elevation: 6 },
-  logoText: { color: "#FFFFFF", fontSize: 20, fontWeight: "600" },
+  header: { backgroundColor: '#1B1F1D', paddingVertical: 15, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 6 },
+  headerSide: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  logoText: { color: '#FFFFFF', fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
   logo: { width: 40, height: 40 },
   banner: { width: "100%", height: 200, borderRadius: 16, marginTop: 18, alignSelf: "center", resizeMode: "cover" },
   sectionTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 16 }

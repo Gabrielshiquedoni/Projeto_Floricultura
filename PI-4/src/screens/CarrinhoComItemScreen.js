@@ -5,7 +5,6 @@ import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants'; 
 import MenuOverlay from '../components/MenuOverlay'; 
-import Rodape from '../components/Rodape';
 import { CartContext } from '../contexts/CartContext';
 
 export default function CarrinhoComItemScreen() {
@@ -128,8 +127,6 @@ export default function CarrinhoComItemScreen() {
           <Text style={styles.checkoutButtonText}>Finalizar compra</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      <Rodape />
 
       {/* RENDERIZA O MENU SE O INTERRUPTOR ESTIVER LIGADO */}
       {menuVisible && <MenuOverlay onClose={() => setMenuVisible(false)} />}

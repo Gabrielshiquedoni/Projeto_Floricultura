@@ -3,7 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import ProdutoScreen from './src/screens/ProdutoScreen';
+
+// TELAS
 import HomeScreen from './src/screens/HomeScreen';
 import UsuarioDetailScreen from './src/screens/UsuarioDetailScreen';
 import DatabaseDebugScreen from './src/screens/DatabaseDebugScreen';
@@ -17,13 +18,16 @@ import CheckoutPagamento from './src/screens/CheckoutPagamentoScreen';
 import Revisao from './src/screens/RevisaoScreen';
 import Pagamento from './src/screens/PagamentoScreen';
 import CarrinhoVazio from './src/screens/CarrinhoVazioScreen';
+import ProdutoScreen from './src/screens/ProdutoScreen'; // Garantindo a tela de produto
 
-// 1. A Importação da Nuvem (agora o caminho está certo)
+// NUVENS DE DADOS E MODAL
 import { CartProvider } from './src/contexts/CartContext';
+import { AuthProvider } from './src/contexts/AuthContext';
+import AuthModal from './src/components/AuthModal';
 
 const Stack = createStackNavigator();
 
-// 2. Isolamos as rotas
+// ISOLAMOS O APLICATIVO
 function MainApp() {
   return (
     <SafeAreaProvider>
@@ -49,11 +53,14 @@ function MainApp() {
   );
 }
 
-// 3. Abraçamos o App com o Provedor do Carrinho
+// O ENVELOPAMENTO SUPERIOR
 export default function App() {
   return (
-    <CartProvider>
-      <MainApp />
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <MainApp />
+        <AuthModal />
+      </CartProvider>
+    </AuthProvider>
   );
 }

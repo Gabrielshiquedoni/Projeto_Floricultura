@@ -1,89 +1,241 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Feather, Ionicons } from '@expo/vector-icons';
+import React, { useState, useContext } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import MenuOverlay from '../components/MenuOverlay'; 
-import Rodape from '../components/Rodape';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather, Ionicons } from "@expo/vector-icons";
+
+// Componentes da Infraestrutura
+import MenuOverlay from '../components/MenuOverlay';
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function PersonalizadosScreen() {
   const navigation = useNavigation();
+  
+  // NUVEM E ESTADOS
+  const { openAuthModal } = useContext(AuthContext);
   const [menuVisible, setMenuVisible] = useState(false);
+  
+  // Estado para fazer os Checkboxes funcionarem de verdade
+  const [selecoes, setSelecoes] = useState([]);
+
+  const toggleSelecao = (item) => {
+    if (selecoes.includes(item)) {
+      setSelecoes(selecoes.filter(i => i !== item)); // Desmarca
+    } else {
+      setSelecoes([...selecoes, item]); // Marca
+    }
+  };
+
+  const goToHome = () => {
+    navigation.navigate('Home'); 
+  };
+
+  const AdicionarCarrinho = () => {
+    alert("Orçamento personalizado adicionado ao carrinho!");
+    navigation.navigate('CarrinhoComItem'); 
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       
       {/* CABEÇALHO PADRONIZADO E CONECTADO */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Image source={require('../../assets/images/LogoSemFundo.png')} style={styles.logo} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.logoText}>Jardim Encantado</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('CarrinhoComItem')}>
-          <Ionicons name="cart-outline" size={26} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setMenuVisible(true)}>
-          <Ionicons name="menu" size={28} color="#fff" />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.cartHeaderTitle}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Feather name="arrow-left" size={24} color="#FFF" />
+        {/* ESQUERDA: Logo + Usuário */}
+        <View style={styles.headerSide}>
+          <TouchableOpacity onPress={goToHome}>
+            <Image source={require('../../assets/images/LogoSemFundo.png')} style={styles.logo} />
           </TouchableOpacity>
-          <Text style={styles.title}>Personalizados</Text>
+          <TouchableOpacity onPress={() => openAuthModal('login')} style={{ marginLeft: 15 }}>
+            <Feather name="user" size={24} color="#00ff00" />
+          </TouchableOpacity>
         </View>
 
-        <Text style={styles.subtitle}>Crie o arranjo perfeito para alguém especial.</Text>
+        {/* CENTRO: Título */}
+        <TouchableOpacity onPress={goToHome}>
+          <Text style={styles.logoText}>Jardim Encantado</Text>
+        </TouchableOpacity>
 
-        <View style={styles.formContainer}>
-          <Text style={styles.label}>O que você tem em mente?</Text>
-          <TextInput 
-            style={styles.textArea} 
-            placeholder="Ex: Quero um buquê apenas com rosas azuis e brancas..." 
-            placeholderTextColor="#A0AAB2"
-            multiline={true}
-            numberOfLines={4}
-          />
-
-          <Text style={styles.label}>Para qual ocasião?</Text>
-          <TextInput 
-            style={styles.input} 
-            placeholder="Ex: Aniversário de Casamento" 
-            placeholderTextColor="#A0AAB2"
-          />
-
-          <TouchableOpacity style={styles.submitButton} onPress={() => alert("Em breve: Integração de envio de pedidos personalizados!")}>
-            <Text style={styles.submitButtonText}>Solicitar Orçamento</Text>
+        {/* DIREITA: Carrinho + Menu */}
+        <View style={[styles.headerSide, { justifyContent: 'flex-end' }]}>
+          <TouchableOpacity onPress={() => navigation.navigate('CarrinhoComItem')} style={{ marginRight: 15 }}>
+            <Ionicons name="cart-outline" size={26} color="#fff" />
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => setMenuVisible(true)}>
+            <Ionicons name="menu" size={28} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+        {/* CARD PRINCIPAL (Design Original Mantido) */}
+        <View style={styles.card}>
+          
+          <Text style={styles.title}>Bem vindo à aba de personalizados!</Text>
+
+          <Text style={styles.subtitle}>
+            Nessa aba, você nos fala o que deseja e nós atendemos seu pedido!
+            Basta preencher o formulário abaixo com suas preferências. Escolha as
+            flores, cores e o tamanho do seu buquê, além de opções de presentes
+            como caixas, ursos e chocolates!
+          </Text>
+
+          {/* ---------------- COLUNAS ---------------- */}
+          <View style={styles.columnsContainer}>
+          
+            {/* COLUNA 1 */}
+            <View style={styles.column}>
+              
+              {/* FLORES */}
+              <Text style={styles.sectionTitle}>Escolha as flores:</Text>
+              {["Rosas", "Tulipas", "Orquídeas", "Girassóis", "Jasmins"].map((item, index) => (
+                <TouchableOpacity key={`flor-${index}`} style={styles.optionRow} onPress={() => toggleSelecao(item)}>
+                  <View style={styles.checkbox}>
+                    {selecoes.includes(item) && <Feather name="check" size={16} color="#00ff00" />}
+                  </View>
+                  <Text style={styles.optionLabel}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+
+              {/* TAMANHO */}
+              <Text style={[styles.sectionTitle, { marginTop: 20 }]}>
+                Tamanho do buquê:
+              </Text>
+              {["Pequeno", "Médio", "Grande"].map((item, index) => (
+                <TouchableOpacity key={`tam-${index}`} style={styles.optionRow} onPress={() => toggleSelecao(item)}>
+                  <View style={styles.checkbox}>
+                    {selecoes.includes(item) && <Feather name="check" size={16} color="#00ff00" />}
+                  </View>
+                  <Text style={styles.optionLabel}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+
+            </View>
+
+            {/* COLUNA 2 */}
+            <View style={styles.column}>
+              
+              {/* CORES */}
+              <Text style={styles.sectionTitle}>Cores das flores:</Text>
+              {["Rosa", "Branca", "Amarela", "Laranja", "Lilás", "Roxa"].map((item, index) => (
+                <TouchableOpacity key={`cor-${index}`} style={styles.optionRow} onPress={() => toggleSelecao(item)}>
+                  <View style={styles.checkbox}>
+                    {selecoes.includes(item) && <Feather name="check" size={16} color="#00ff00" />}
+                  </View>
+                  <Text style={styles.optionLabel}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+
+              {/* PRESENTE */}
+              <Text style={[styles.sectionTitle, { marginTop: 20 }]}>
+                Acompanhamento:
+              </Text>
+              {["Caixa para buquê", "Urso de pelúcia", "Chocolate"].map((item, index) => (
+                <TouchableOpacity key={`pres-${index}`} style={styles.optionRow} onPress={() => toggleSelecao(item)}>
+                  <View style={styles.checkbox}>
+                    {selecoes.includes(item) && <Feather name="check" size={16} color="#00ff00" />}
+                  </View>
+                  <Text style={styles.optionLabel}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+
+            </View>
+
+          </View>
+
+          {/* BOTÃO (Ajustei a cor para manter a identidade visual do app) */}
+          <TouchableOpacity style={styles.btn} onPress={AdicionarCarrinho}>
+            <Text style={styles.btnText}>Adicionar ao carrinho</Text>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
 
-      <Rodape />
-      
-      {/* RENDERIZA O MENU */}
-      {menuVisible && <MenuOverlay onClose={() => setMenuVisible(false)} />}
+      {/* MENU RENDRIZADO FORA DO SCROLL */}
+      {menuVisible && (
+        <MenuOverlay onClose={() => setMenuVisible(false)} />
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#141B18' },
-  header: { backgroundColor: '#1B1F1D', paddingVertical: 18, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 6 },
-  logoText: { color: '#FFFFFF', fontSize: 20, fontWeight: '600' },
+  container: { flex: 1, backgroundColor: "#141B18" },
+
+  // Estilos do Cabeçalho Padronizado
+  header: { backgroundColor: '#1B1F1D', paddingVertical: 15, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 6 },
+  headerSide: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  logoText: { color: '#FFFFFF', fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
   logo: { width: 40, height: 40 },
-  scrollContent: { padding: 20, paddingBottom: 100 },
-  cartHeaderTitle: { flexDirection: 'row', alignItems: 'center', marginBottom: 20, marginTop: 10 },
-  backButton: { padding: 8 },
-  title: { fontSize: 22, fontWeight: 'bold', color: '#FFF', marginLeft: 10 },
-  subtitle: { fontSize: 16, color: '#A0AAB2', marginBottom: 20, marginLeft: 5 },
-  formContainer: { backgroundColor: '#1A2421', borderRadius: 12, padding: 20, marginTop: 10 },
-  label: { color: '#FFF', fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
-  input: { backgroundColor: '#2C3A35', borderRadius: 8, padding: 15, color: '#FFF', marginBottom: 20, fontSize: 16 },
-  textArea: { backgroundColor: '#2C3A35', borderRadius: 8, padding: 15, color: '#FFF', marginBottom: 20, fontSize: 16, height: 120, textAlignVertical: 'top' },
-  submitButton: { backgroundColor: '#00ff00', paddingVertical: 18, borderRadius: 12, alignItems: 'center', marginTop: 10 },
-  submitButtonText: { color: '#1B1F1D', fontSize: 17, fontWeight: 'bold' },
+
+  // Estilos do Card da sua colega
+  card: {
+    backgroundColor: "#1A2421", // Escureci levemente para dar destaque contra o fundo
+    margin: 20,
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  title: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  subtitle: {
+    color: "#A0AAB2",
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 25,
+    lineHeight: 20,
+  },
+  columnsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  column: {
+    width: "48%",
+  },
+  sectionTitle: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  optionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: "#A0AAB2", // Cor neutra quando desmarcado
+    marginRight: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  optionLabel: { color: "#fff", fontSize: 14 },
+  btn: {
+    backgroundColor: "#00ff00", // Verde padrão de botões de ação do app
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 35,
+    shadowColor: "#00ff00", 
+    shadowOpacity: 0.3, 
+    shadowRadius: 6, 
+    elevation: 4
+  },
+  btnText: {
+    fontSize: 17,
+    fontWeight: "bold",
+    color: "#1B1F1D",
+  },
 });

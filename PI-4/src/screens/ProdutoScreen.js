@@ -4,8 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants'; 
-
-import Rodape from '../components/Rodape';
 import { CartContext } from '../contexts/CartContext';
 
 export default function ProdutoScreen() {
@@ -83,7 +81,6 @@ export default function ProdutoScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-      <Rodape />
     </SafeAreaView>
   );
 }
