@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
+import ProdutoScreen from './src/screens/ProdutoScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import UsuarioDetailScreen from './src/screens/UsuarioDetailScreen';
 import DatabaseDebugScreen from './src/screens/DatabaseDebugScreen';
@@ -42,6 +42,7 @@ function MainApp() {
           <Stack.Screen name="Pagamento" component={Pagamento} />
           <Stack.Screen name="CarrinhoVazio" component={CarrinhoVazio} />
           <Stack.Screen name="DatabaseDebug" component={DatabaseDebugScreen} />
+          <Stack.Screen name="Produto" component={ProdutoScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

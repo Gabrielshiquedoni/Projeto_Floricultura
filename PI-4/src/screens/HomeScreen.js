@@ -70,8 +70,8 @@ export default function HomeScreen() {
         image={imagemSegura} 
         price={precoFormatado} 
         onPress={() => {
-          adicionarAoCarrinho(item); // Envia pro contexto global
-          alert(`🌿 ${item.nome} adicionado ao carrinho!`);
+          // Agora ele navega de verdade e leva os dados na mala
+          navigation.navigate('Produto', { produtoData: item });
         }}
       />
     );

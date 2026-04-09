@@ -55,31 +55,24 @@ export default function ConjuntoScreen() {
 
   const renderItem = ({ item }) => {
     const precoFormatado = Number(item.preco).toFixed(2).replace('.', ',');
-    
-    // A MÁGICA: Monta a URL da imagem baseada no seu backend local
-    const urlDaImagemReal = `http://${ipComputador}:3000/images/${item.imagem_url}`;
+    let imagemSegura = require('../../assets/images/LogoSemFundo.png');
 
-    const imagemSegura = item.imagem_url && item.imagem_url.length > 4
-      ? { uri: urlDaImagemReal }
-      : require('../../assets/images/LogoSemFundo.png');
+    if (item.imagem_url && item.imagem_url.length > 4) {
+      if (item.imagem_url.startsWith('http')) {
+        imagemSegura = { uri: item.imagem_url };
+      } else {
+        imagemSegura = { uri: `http://${ipComputador}:3000/images/${item.imagem_url}` };
+      }
+    }
       
     return (
       <ProdutoCard 
         image={imagemSegura} 
         price={precoFormatado} 
-        // A MÁGICA DA NAVEGAÇÃO
         onPress={() => {
-          // Aqui nós mandamos o aplicativo ir para a tela 'Produto' 
-          // e levamos todos os dados do banco junto no pacote 'item'
-          navigation.navigate('Produto', {
-             produtoData: {
-                id: item.id_produto,
-                nome: item.nome,
-                descricao: item.descricao,
-                preco: precoFormatado,
-                imagem: imagemSegura
-             }
-          });
+          // A MÁGICA DA NAVEGAÇÃO SIMPLIFICADA
+          // Mandamos o "item" cru direto do banco. A Tela de Produto se vira com ele!
+          navigation.navigate('Produto', { produtoData: item });
         }}
       />
     );

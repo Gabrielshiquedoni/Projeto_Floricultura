@@ -1,16 +1,13 @@
 import React, { createContext, useState } from 'react';
 
-// Criamos a "Nuvem" de dados do carrinho
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [carrinho, setCarrinho] = useState([]);
 
-  // Função para adicionar (se já existir, soma a quantidade)
   const adicionarAoCarrinho = (produto) => {
     setCarrinho((carrinhoAtual) => {
       const itemExiste = carrinhoAtual.find(item => item.id_produto === produto.id_produto);
-      
       if (itemExiste) {
         return carrinhoAtual.map(item => 
           item.id_produto === produto.id_produto 
@@ -23,16 +20,27 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // Função para remover um item por completo
+  // A NOVA FUNÇÃO: Tira 1 da quantidade. Se chegar a 0, a planta é filtrada para fora.
+  const diminuirQuantidade = (id_produto) => {
+    setCarrinho((carrinhoAtual) => {
+      return carrinhoAtual.map(item => {
+        if (item.id_produto === id_produto) {
+          return { ...item, quantidade: item.quantidade - 1 };
+        }
+        return item;
+      }).filter(item => item.quantidade > 0); // Só mantém quem tem mais de 0
+    });
+  };
+
   const removerDoCarrinho = (id_produto) => {
     setCarrinho((carrinhoAtual) => carrinhoAtual.filter(item => item.id_produto !== id_produto));
   };
 
-  // Esvazia o carrinho (usado após a compra)
   const limparCarrinho = () => setCarrinho([]);
 
   return (
-    <CartContext.Provider value={{ carrinho, adicionarAoCarrinho, removerDoCarrinho, limparCarrinho }}>
+    // Não esqueça que adicionamos ela aqui na exportação!
+    <CartContext.Provider value={{ carrinho, adicionarAoCarrinho, diminuirQuantidade, removerDoCarrinho, limparCarrinho }}>
       {children}
     </CartContext.Provider>
   );

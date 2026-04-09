@@ -12,7 +12,7 @@ export default function CarrinhoComItemScreen() {
   const navigation = useNavigation();
   
   // CONEXÃO COM A NUVEM DO CARRINHO E INTERRUPTOR DO MENU
-  const { carrinho, adicionarAoCarrinho, removerDoCarrinho } = useContext(CartContext);
+  const { carrinho, adicionarAoCarrinho, removerDoCarrinho, diminuirQuantidade } = useContext(CartContext);
   const [menuVisible, setMenuVisible] = useState(false);
 
   // RADAR DE IP DINÂMICO
@@ -87,7 +87,7 @@ export default function CarrinhoComItemScreen() {
                 {/* Controles de Quantidade */}
                 <View style={styles.quantityControlContainer}>
                   <View style={styles.quantityControl}>
-                    <TouchableOpacity onPress={() => removerDoCarrinho(item.id_produto)}>
+                    <TouchableOpacity onPress={() => diminuirQuantidade(item.id_produto)}>
                       <Text style={styles.quantityButton}>-</Text>
                     </TouchableOpacity>
                     <Text style={styles.quantityText}>{item.quantidade}</Text>
