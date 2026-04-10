@@ -19,7 +19,7 @@ export default function ConfirmarEntregaScreen() {
   return (
     <SafeAreaView style={styles.container}>
         <ScrollView>
-        {/* HEADER */}
+        
             <View style={styles.header}>
                 <TouchableOpacity onPress={goToHome}>
                     <Image
@@ -35,12 +35,12 @@ export default function ConfirmarEntregaScreen() {
                 </TouchableOpacity>
             </View>
 
-        {/* BOX PRINCIPAL */}
+      
         <View style={styles.box}>
 
             <Text style={styles.title}>Confirme a forma de entrega</Text>
 
-            {/* OPÇÃO DE ENTREGA */}
+            
             <View style={styles.deliveryRow}>
             <FontAwesome name="circle-o" size={22} color="#000" />
             
@@ -56,16 +56,16 @@ export default function ConfirmarEntregaScreen() {
             <Text style={styles.freeText}>Grátis</Text>
             </View>
 
-            {/* DIVISOR */}
+           
             <View style={styles.divider} />
 
-            {/* ALTERAR ENDEREÇO */}
+            
             <TouchableOpacity>
             <Text style={styles.changeAddress}>Alterar ou escolher outro endereço</Text>
             </TouchableOpacity>
         </View>
 
-        {/* INFORMACOES FINAIS */}
+       
         <View style={styles.bottomBox}>
 
             <View>
@@ -82,7 +82,7 @@ export default function ConfirmarEntregaScreen() {
 
         </View>
 
-        {/* BOTOES */}
+        
         <View style={styles.buttonsRow}>
             <TouchableOpacity style={styles.backBtn} onPress={() => (navigation.navigate('CarrinhoComItem'))}>
             <Text style={styles.backText}>Voltar</Text>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#141B18",
   },
 
-  /* HEADER */
+  
     header: {
     backgroundColor: "#1B1F1D",
     paddingVertical: 18,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
 
-  /* CAIXA PRINCIPAL */
+  
   box: {
     backgroundColor: "#fff",
     marginTop: 30,
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  /* BOTTOM BOX */
+ 
   bottomBox: {
     backgroundColor: "#1B1F1D",
     padding: 20,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
-  /* BOTOES */
+  
   buttonsRow: {
     flexDirection: "row",
     justifyContent: "space-between",

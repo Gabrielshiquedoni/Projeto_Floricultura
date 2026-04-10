@@ -41,7 +41,7 @@ export default function UsuarioDetailScreen({ route, navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       
-      {/* Header */}
+      
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
@@ -54,7 +54,7 @@ export default function UsuarioDetailScreen({ route, navigation }) {
       </View>
 
       <ScrollView style={styles.content}>
-        {/* Avatar Section */}
+        
         <View style={styles.avatarSection}>
           <View style={styles.avatarCircle}>
             <Text style={styles.avatarText}>
@@ -67,7 +67,7 @@ export default function UsuarioDetailScreen({ route, navigation }) {
           </View>
         </View>
 
-        {/* Info Section */}
+        
         <View style={styles.infoSection}>
           <Text style={styles.sectionTitle}>Informações Pessoais</Text>
           
@@ -90,7 +90,7 @@ export default function UsuarioDetailScreen({ route, navigation }) {
           />
         </View>
 
-        {/* Metadata Section */}
+        
         <View style={styles.infoSection}>
           <Text style={styles.sectionTitle}>Informações do Sistema</Text>
           
@@ -109,7 +109,7 @@ export default function UsuarioDetailScreen({ route, navigation }) {
           )}
         </View>
 
-        {/* Action Buttons */}
+        
         <View style={styles.actionsSection}>
           <TouchableOpacity 
             style={styles.primaryButton}

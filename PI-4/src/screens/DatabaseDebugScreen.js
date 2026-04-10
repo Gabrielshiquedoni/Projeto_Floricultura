@@ -28,17 +28,17 @@ export default function DatabaseDebugScreen({ navigation }) {
       setLoading(true);
       const db = SQLite.openDatabaseSync('usuarios.db');
       
-      // Listar tabelas
+      
       const tabelasResult = await db.getAllAsync(
         "SELECT name FROM sqlite_master WHERE type='table'"
       );
       setTabelas(tabelasResult);
 
-      // Buscar usuários
+     
       const usuariosResult = await db.getAllAsync('SELECT * FROM usuarios');
       setUsuarios(usuariosResult);
 
-      // Estatísticas
+      
       const totalUsuarios = usuariosResult.length;
       const comIdade = usuariosResult.filter(u => u.idade).length;
       const maisAntigo = usuariosResult.length > 0 ? 
@@ -83,7 +83,7 @@ export default function DatabaseDebugScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       
-      {/* Header */}
+      
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
@@ -101,7 +101,7 @@ export default function DatabaseDebugScreen({ navigation }) {
       </View>
 
       <ScrollView style={styles.content}>
-        {/* Estatísticas */}
+        
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>📊 Estatísticas</Text>
           <View style={styles.statsGrid}>
@@ -124,7 +124,7 @@ export default function DatabaseDebugScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Tabelas */}
+       
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🗃️ Tabelas ({tabelas.length})</Text>
           {tabelas.map((tabela, index) => (
@@ -135,7 +135,7 @@ export default function DatabaseDebugScreen({ navigation }) {
           ))}
         </View>
 
-        {/* Dados dos Usuários */}
+        
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>👥 Dados dos Usuários</Text>
@@ -177,7 +177,7 @@ export default function DatabaseDebugScreen({ navigation }) {
           )}
         </View>
 
-        {/* Informações Técnicas */}
+        
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ℹ️ Localização do Banco</Text>
           <Text style={styles.helpText}>

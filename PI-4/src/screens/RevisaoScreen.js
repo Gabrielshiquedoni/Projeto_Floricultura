@@ -19,7 +19,7 @@ export default function RevisaoScreen() {
   return (
     <SafeAreaView style={styles.container}>
         <ScrollView>
-            {/* HEADER */}
+            
             <View style={styles.header}>
                 <TouchableOpacity onPress={goToHome}>
                     <Image
@@ -35,11 +35,11 @@ export default function RevisaoScreen() {
                 </TouchableOpacity>
             </View>
 
-            {/* CARD PRINCIPAL */}
+            
             <View style={styles.mainCard}>
                 <Text style={styles.cardTitle}>Revise e confirme</Text>
 
-                {/* BLOCO CLIENTE */}
+                
                 <View style={styles.section}>
                 <MaterialIcons name="person-outline" size={22} color="#000" style={{ marginRight: 10 }} />
                 <View>
@@ -50,7 +50,7 @@ export default function RevisaoScreen() {
 
                 <View style={styles.divider} />
 
-                {/* BLOCO ENDEREÇO */}
+                
                 <View style={styles.section}>
                 <Entypo name="location-pin" size={22} color="#000" style={{ marginRight: 10 }} />
                 <View>
@@ -61,7 +61,7 @@ export default function RevisaoScreen() {
 
                 <View style={styles.divider} />
 
-                {/* BLOCO PRODUTO */}
+                
                 <View style={styles.produtoBox}>
                 <Image
                     source={require('../../assets/images/rosa7.jpeg')}
@@ -78,7 +78,7 @@ export default function RevisaoScreen() {
 
                 <View style={styles.divider} />
 
-                {/* BLOCO PAGAMENTO */}
+                
                 <View style={styles.sectionPagamento}>
                 <Feather name="credit-card" size={20} color="#000" />
 
@@ -96,7 +96,7 @@ export default function RevisaoScreen() {
                 </View>
                 </View>
 
-                {/* RESUMO */}
+                
                 <View style={styles.resumoBox}>
                 <Text style={styles.resumoTitle}>Resumo da compra:</Text>
 
@@ -109,7 +109,7 @@ export default function RevisaoScreen() {
                 </View>
             </View>
 
-            {/* BOTÕES */}
+            
             <View style={styles.btnRow}>
                 <TouchableOpacity style={styles.btnVoltar} onPress={() => (navigation.navigate("CheckoutPagamento"))}>
                 <Text style={styles.btnVoltarText}>Voltar</Text>

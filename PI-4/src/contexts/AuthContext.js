@@ -4,7 +4,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalType, setModalType] = useState('login'); // 'login' ou 'cadastro'
+  const [modalType, setModalType] = useState('login'); 
   const [usuarioLogado, setUsuarioLogado] = useState(null);
 
   const openAuthModal = (type = 'login') => {

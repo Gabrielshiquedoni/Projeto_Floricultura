@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// TELAS
+
 import HomeScreen from './src/screens/HomeScreen';
 import UsuarioDetailScreen from './src/screens/UsuarioDetailScreen';
 import DatabaseDebugScreen from './src/screens/DatabaseDebugScreen';
@@ -20,14 +20,14 @@ import Pagamento from './src/screens/PagamentoScreen';
 import CarrinhoVazio from './src/screens/CarrinhoVazioScreen';
 import ProdutoScreen from './src/screens/ProdutoScreen'; // Garantindo a tela de produto
 
-// NUVENS DE DADOS E MODAL
+
 import { CartProvider } from './src/contexts/CartContext';
 import { AuthProvider } from './src/contexts/AuthContext';
 import AuthModal from './src/components/AuthModal';
 
 const Stack = createStackNavigator();
 
-// ISOLAMOS O APLICATIVO
+
 function MainApp() {
   return (
     <SafeAreaProvider>
@@ -53,7 +53,7 @@ function MainApp() {
   );
 }
 
-// O ENVELOPAMENTO SUPERIOR
+
 export default function App() {
   return (
     <AuthProvider>

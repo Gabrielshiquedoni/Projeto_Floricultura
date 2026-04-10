@@ -26,7 +26,7 @@ export default function PagamentoScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView>
 
-        {/* HEADER */}
+        
         <View style={styles.header}>
             <TouchableOpacity onPress={goToHome}>
                 <Image
@@ -42,7 +42,7 @@ export default function PagamentoScreen() {
             </TouchableOpacity>
         </View>
 
-        {/* CARD SUPERIOR */}
+        
         <View style={styles.card}>
           <View style={styles.iconMoney}>
             <Feather name="dollar-sign" size={24} color="#000" />
@@ -52,7 +52,7 @@ export default function PagamentoScreen() {
           <Text style={styles.subtitle}>Pague R$ 199,99 via Pix para concluir sua compra</Text>
         </View>
 
-        {/* SEÇÃO BRANCA */}
+        
         <View style={styles.whiteBox}>
           <Text style={styles.whiteTitle}>Escaneie um código QR para pagar</Text>
 
@@ -60,7 +60,7 @@ export default function PagamentoScreen() {
           <Text style={styles.step}>2. Escolha pagar via Pix.</Text>
           <Text style={styles.step}>3. Escaneie o seguinte código:</Text>
 
-          {/* QR CODE */}
+          
           <View style={styles.qrContainer}>
             <Image
               source={{ uri: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PagamentoPix" }}
@@ -74,12 +74,12 @@ export default function PagamentoScreen() {
           </View>
         </View>
 
-        {/* CÓDIGO PIX */}
+        
         <View style={styles.copyBox}>
           <Text style={styles.copyText}>{codigoPix}</Text>
         </View>
 
-        {/* BOTÕES */}
+        
         <View style={styles.buttonsRow}>
           <TouchableOpacity style={styles.btn} onPress={copiar}>
             <Text style={styles.btnText}>Copiar código</Text>

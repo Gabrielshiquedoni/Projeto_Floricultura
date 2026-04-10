@@ -16,7 +16,7 @@ export default function ConjuntoScreen() {
   const { openAuthModal } = useContext(AuthContext);
   const navigation = useNavigation();
 
-  // ELEVAMOS O IP: Agora o arquivo inteiro sabe o IP do computador
+  
   const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
   const ipComputador = hostUri ? hostUri.split(':')[0] : 'localhost';
 
@@ -78,7 +78,7 @@ export default function ConjuntoScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        {/* ESQUERDA: Logo + Usuário */}
+        
         <View style={styles.headerSide}>
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Image source={require('../../assets/images/LogoSemFundo.png')} style={styles.logo} />
@@ -88,12 +88,12 @@ export default function ConjuntoScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* CENTRO: Título */}
+        
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Text style={styles.logoText}>Jardim Encantado</Text>
         </TouchableOpacity>
 
-        {/* DIREITA: Carrinho + Menu */}
+        
         <View style={[styles.headerSide, { justifyContent: 'flex-end' }]}>
           <TouchableOpacity onPress={() => navigation.navigate('CarrinhoComItem')} style={{ marginRight: 15 }}>
             <Ionicons name="cart-outline" size={26} color="#fff" />

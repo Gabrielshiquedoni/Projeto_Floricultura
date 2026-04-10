@@ -11,16 +11,16 @@ export default function ProdutoScreen() {
   const navigation = useNavigation();
   const { adicionarAoCarrinho } = useContext(CartContext);
 
-  // Recebe os dados que a Home mandou na mala
+  
   const { produtoData } = route.params || {};
 
-  // Se por acaso abrirem a tela sem dados, volta pra Home
+  
   if (!produtoData) {
     navigation.goBack();
     return null;
   }
 
-  // Lógica da Imagem Híbrida
+  
   const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
   const ipComputador = hostUri ? hostUri.split(':')[0] : 'localhost';
   
@@ -34,12 +34,12 @@ export default function ProdutoScreen() {
   const handleAdicionar = () => {
     adicionarAoCarrinho(produtoData);
     alert(`🌿 ${produtoData.nome} adicionado ao carrinho!`);
-    navigation.navigate("CarrinhoComItem"); // Joga o usuário pro carrinho após adicionar
+    navigation.navigate("CarrinhoComItem"); 
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* CABEÇALHO */}
+      
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Image source={require('../../assets/images/LogoSemFundo.png')} style={styles.logo} />
@@ -53,16 +53,16 @@ export default function ProdutoScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* BOTÃO VOLTAR */}
+        
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={24} color="#FFF" />
           <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
-        {/* FOTO GIGANTE DO PRODUTO */}
+        
         <Image source={imagemSegura} style={styles.productImage} />
 
-        {/* INFORMAÇÕES DO PRODUTO */}
+        
         <View style={styles.infoContainer}>
           <Text style={styles.productName}>{produtoData.nome}</Text>
           <Text style={styles.productPrice}>R$ {precoFormatado}</Text>
@@ -70,11 +70,11 @@ export default function ProdutoScreen() {
           <Text style={styles.sectionTitle}>Descrição</Text>
           <Text style={styles.productDescription}>{produtoData.descricao}</Text>
 
-          {/* ESTOQUE */}
+          
           <Text style={styles.stockText}>Disponível em estoque: {produtoData.estoque} unidades</Text>
         </View>
 
-        {/* BOTÃO ADICIONAR AO CARRINHO */}
+        
         <TouchableOpacity style={styles.addButton} onPress={handleAdicionar}>
           <Ionicons name="cart" size={24} color="#1B1F1D" style={{marginRight: 10}} />
           <Text style={styles.addButtonText}>Adicionar ao Carrinho</Text>
