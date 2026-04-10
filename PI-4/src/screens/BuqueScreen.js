@@ -1,4 +1,3 @@
-// 1. OLHA O useContext AQUI NA PRIMEIRA LINHA:
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import Constants from 'expo-constants';
@@ -80,7 +79,6 @@ export default function BuqueScreen() {
   return (
     <SafeAreaView style={styles.container}>
       
-      {/* 2. CABEÇALHO FORA DO SCROLLVIEW PARA FICAR FIXO NO TOPO */}
       <View style={styles.header}>
         <View style={styles.headerSide}>
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
@@ -124,13 +122,11 @@ export default function BuqueScreen() {
         </ContainerSecao>
       </ScrollView>
 
-      {/* MENU RENDERIZADO FORA DO SCROLLVIEW POR SEGURANÇA */}
       {menuVisible && <MenuOverlay onClose={() => setMenuVisible(false)} />}
     </SafeAreaView>
   );
 }
 
-// 3. CSS LIMPO (Sem as duplicatas de logo e logoText)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#141B18" },
   loading: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" },

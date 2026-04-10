@@ -20,7 +20,6 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // A NOVA FUNÇÃO: Tira 1 da quantidade. Se chegar a 0, a planta é filtrada para fora.
   const diminuirQuantidade = (id_produto) => {
     setCarrinho((carrinhoAtual) => {
       return carrinhoAtual.map(item => {
@@ -28,7 +27,7 @@ export const CartProvider = ({ children }) => {
           return { ...item, quantidade: item.quantidade - 1 };
         }
         return item;
-      }).filter(item => item.quantidade > 0); // Só mantém quem tem mais de 0
+      }).filter(item => item.quantidade > 0); 
     });
   };
 
@@ -39,7 +38,6 @@ export const CartProvider = ({ children }) => {
   const limparCarrinho = () => setCarrinho([]);
 
   return (
-    // Não esqueça que adicionamos ela aqui na exportação!
     <CartContext.Provider value={{ carrinho, adicionarAoCarrinho, diminuirQuantidade, removerDoCarrinho, limparCarrinho }}>
       {children}
     </CartContext.Provider>

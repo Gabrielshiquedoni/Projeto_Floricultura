@@ -18,7 +18,6 @@ export default function CarrinhoVazio() {
     <SafeAreaView style={styles.container}>
           <ScrollView>
 
-      {/* HEADER */}
         <View style={styles.header}>
             <TouchableOpacity onPress={goToHome}>
                 <Image
@@ -34,7 +33,6 @@ export default function CarrinhoVazio() {
             </TouchableOpacity>
         </View>
 
-      {/* CARD CENTRAL */}
       <View style={styles.card}>
         <Text style={styles.cardText}>Não existem produtos no carrinho</Text>
 
@@ -57,7 +55,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#141B18",
   },
 
-  /* ---------- HEADER ---------- */
   header: {
     backgroundColor: "#1B1F1D",
     paddingVertical: 18,
@@ -84,7 +81,6 @@ const styles = StyleSheet.create({
     height: 40,
   },
 
-  /* ---------- CARD CENTRAL ---------- */
   card: {
     backgroundColor: "#fff",
     marginHorizontal: 25,

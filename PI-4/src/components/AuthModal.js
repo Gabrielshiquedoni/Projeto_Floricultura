@@ -6,13 +6,13 @@ import { AuthContext } from '../contexts/AuthContext';
 export default function AuthModal() {
   const { modalVisible, closeAuthModal, modalType, setModalType } = useContext(AuthContext);
 
-  // Estados dos formulários
+
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [formCad, setFormCad] = useState({ nome: '', email: '', cpf: '', tel: '', senha: '', confirmarSenha: '' });
 
   const handleLogin = () => {
-    alert(`Tentando logar: ${email}`); // Integração SQLite virá aqui
+    alert(`Tentando logar: ${email}`); 
   };
 
   const handleCadastro = () => {
@@ -20,7 +20,7 @@ export default function AuthModal() {
       alert("As senhas não coincidem!");
       return;
     }
-    alert("Pronto para criar usuário!"); // Integração SQLite virá aqui
+    alert("Pronto para criar usuário!"); 
   };
 
   if (!modalVisible) return null;
@@ -29,10 +29,8 @@ export default function AuthModal() {
     <Modal visible={modalVisible} transparent={true} animationType="slide" onRequestClose={closeAuthModal}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.modalOverlay}>
         
-        {/* Área escura clicável para fechar */}
         <TouchableOpacity style={styles.touchableClose} onPress={closeAuthModal} activeOpacity={1} />
         
-        {/* O Pop-up em si (Bottom Sheet) */}
         <View style={styles.modalContent}>
           
           <View style={styles.dragHandle} />
@@ -42,7 +40,6 @@ export default function AuthModal() {
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
             
-            {/* CABEÇALHO DO MODAL */}
             <View style={styles.headerContainer}>
               <Image source={require('../../assets/images/LogoSemFundo.png')} style={styles.logo} />
               <Text style={styles.title}>
@@ -53,7 +50,6 @@ export default function AuthModal() {
               </Text>
             </View>
 
-            {/* CONTEÚDO DINÂMICO: LOGIN OU CADASTRO */}
             {modalType === 'login' ? (
               <View style={styles.formContainer}>
                 <Text style={styles.label}>E-mail</Text>

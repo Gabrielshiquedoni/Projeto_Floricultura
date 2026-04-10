@@ -4,38 +4,32 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../contexts/AuthContext';
 
-// Pega a largura da tela para o menu ocupar só 75% dela
 const { width } = Dimensions.get('window');
 
 export default function MenuOverlay({ onClose }) {
   const navigation = useNavigation();
   
-  // Conectando o Menu à nossa Nuvem de Autenticação
   const { usuarioLogado, setUsuarioLogado, openAuthModal } = useContext(AuthContext);
 
-  // Função inteligente: fecha o menu e depois viaja para a tela
   const navigateTo = (screen) => {
     onClose();
     navigation.navigate(screen);
   };
 
-  // Função do botão de Login/Logout do Menu
   const handleLoginLogout = () => {
     onClose();
     if (usuarioLogado) {
       setUsuarioLogado(null);
       alert("Você saiu da conta.");
     } else {
-      openAuthModal('login'); // Chama o nosso Pop-up!
+      openAuthModal('login'); 
     }
   };
 
   return (
     <View style={styles.overlay}>
-      {/* Fundo escuro que fecha o menu se clicar fora */}
       <TouchableOpacity style={styles.background} onPress={onClose} activeOpacity={1} />
       
-      {/* O Menu Lateral */}
       <View style={styles.menuContainer}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Menu</Text>
@@ -44,7 +38,6 @@ export default function MenuOverlay({ onClose }) {
           </TouchableOpacity>
         </View>
 
-        {/* Links de Navegação */}
         <View style={styles.menuItems}>
           <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Home')}>
             <Feather name="home" size={22} color="#00ff00" />
@@ -72,7 +65,6 @@ export default function MenuOverlay({ onClose }) {
           </TouchableOpacity>
         </View>
 
-        {/* Botão de Login / Logout no rodapé do Menu */}
         <View style={styles.footer}>
           <TouchableOpacity style={styles.loginButton} onPress={handleLoginLogout}>
             <Feather name={usuarioLogado ? "log-out" : "log-in"} size={22} color="#1B1F1D" />

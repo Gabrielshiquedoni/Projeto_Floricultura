@@ -20,7 +20,6 @@ export default function CheckoutPagamento() {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
-                {/* HEADER */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={goToHome}>
                         <Image
@@ -36,11 +35,9 @@ export default function CheckoutPagamento() {
                     </TouchableOpacity>
                 </View>
 
-                {/* CARD PRINCIPAL */}
                 <View style={styles.card}>
                     <Text style={styles.cardTitle}>Escolha como Pagar</Text>
 
-                    {/* OPÇÃO PIX */}
                     <TouchableOpacity style={styles.option} onPress={() => setSelected("pix")}>
                     <View style={styles.row}>
                         <View style={styles.radioOuter}>
@@ -56,7 +53,6 @@ export default function CheckoutPagamento() {
 
                     <View style={styles.divider} />
 
-                    {/* OPÇÃO CARTÃO */}
                     <TouchableOpacity style={styles.option} onPress={() => setSelected("cartao")}>
                     <View style={styles.row}>
                         <View style={styles.radioOuter}>
@@ -72,7 +68,6 @@ export default function CheckoutPagamento() {
 
                     <View style={styles.divider} />
 
-                    {/* OPÇÃO BOLETO */}
                     <TouchableOpacity style={styles.option} onPress={() => setSelected("boleto")}>
                     <View style={styles.row}>
                         <View style={styles.radioOuter}>
@@ -88,7 +83,6 @@ export default function CheckoutPagamento() {
 
                     <View style={styles.divider} />
 
-                    {/* OPÇÃO SALDO */}
                     <TouchableOpacity style={styles.option} onPress={() => setSelected("saldo")}>
                     <View style={styles.row}>
                         <View style={styles.radioOuter}>
@@ -103,7 +97,6 @@ export default function CheckoutPagamento() {
                     </TouchableOpacity>
                 </View>
 
-                {/* ENTREGA + RESUMO */}
                 <View style={styles.infoSection}>
                     <View>
                     <Text style={styles.infoTitle}>Sua compra chegará:</Text>
@@ -118,7 +111,6 @@ export default function CheckoutPagamento() {
                     </View>
                 </View>
 
-                {/* BOTÕES */}
                 <View style={styles.btnRow}>
                     <TouchableOpacity style={styles.btnVoltar} onPress={() => navigation.navigate("ConfirmarEntrega")}>
                         <Text style={styles.btnVoltarText}>Voltar</Text>

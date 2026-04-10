@@ -10,20 +10,16 @@ import { CartContext } from '../contexts/CartContext';
 export default function CarrinhoComItemScreen() {
   const navigation = useNavigation();
   
-  // CONEXÃO COM A NUVEM DO CARRINHO E INTERRUPTOR DO MENU
   const { carrinho, adicionarAoCarrinho, removerDoCarrinho, diminuirQuantidade } = useContext(CartContext);
   const [menuVisible, setMenuVisible] = useState(false);
 
-  // RADAR DE IP DINÂMICO
   const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
   const ipComputador = hostUri ? hostUri.split(':')[0] : 'localhost';
 
-  // Lógica de Subtotal e Desconto
   const subtotal = carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
   const discount = 15.00; 
   const finalTotal = subtotal - discount > 0 ? subtotal - discount : 0;
 
-  // VERIFICAÇÃO DE CARRINHO VAZIO
   if (carrinho.length === 0) {
     setTimeout(() => navigation.navigate("CarrinhoVazio"), 50);
     return (
@@ -39,7 +35,6 @@ export default function CarrinhoComItemScreen() {
   return (
     <SafeAreaView style={styles.container}>
       
-      {/* CABEÇALHO PADRONIZADO */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Image source={require('../../assets/images/LogoSemFundo.png')} style={styles.logo} />
@@ -65,7 +60,6 @@ export default function CarrinhoComItemScreen() {
 
         <Text style={styles.subtitle}>Confira seus produtos</Text>
 
-        {/* LOOP DE PRODUTOS */}
         {carrinho.map((item) => {
           let imagemDoCarrinho = require('../../assets/images/LogoSemFundo.png');
           
@@ -83,7 +77,6 @@ export default function CarrinhoComItemScreen() {
                 <Text style={styles.itemName}>{item.nome}</Text>
                 <Text style={styles.itemPrice}>R$ {precoItemFormatado}</Text>
                 
-                {/* Controles de Quantidade */}
                 <View style={styles.quantityControlContainer}>
                   <View style={styles.quantityControl}>
                     <TouchableOpacity onPress={() => diminuirQuantidade(item.id_produto)}>
@@ -103,7 +96,6 @@ export default function CarrinhoComItemScreen() {
           );
         })}
 
-        {/* Resumo de Custos */}
         <View style={styles.summaryBox}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryText}>Subtotal</Text>
@@ -119,7 +111,6 @@ export default function CarrinhoComItemScreen() {
           </View>
         </View>
 
-        {/* Botão Finalizar Compra */}
         <TouchableOpacity 
           style={styles.checkoutButton}
           onPress={() => navigation.navigate("ConfirmarEntrega")} 
@@ -128,7 +119,6 @@ export default function CarrinhoComItemScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* RENDERIZA O MENU SE O INTERRUPTOR ESTIVER LIGADO */}
       {menuVisible && <MenuOverlay onClose={() => setMenuVisible(false)} />}
     </SafeAreaView>
   );

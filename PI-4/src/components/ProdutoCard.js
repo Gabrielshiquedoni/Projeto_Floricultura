@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 
 export default function ProdutoCard({ image, price, onPress }) {
   return (
-    // Transformamos a View em TouchableOpacity e passamos a função onPress
+
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <Image
         source={image}
