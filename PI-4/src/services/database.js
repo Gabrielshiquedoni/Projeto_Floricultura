@@ -1,9 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
-// Abrir ou criar o banco de dados
 const db = SQLite.openDatabaseSync('usuarios.db');
 
-// Inicializar banco de dados
 export const initDatabase = async () => {
   try {
     await db.execAsync(`
@@ -23,7 +21,6 @@ export const initDatabase = async () => {
   }
 };
 
-// Listar todos os usuários
 export const getAllUsuarios = async () => {
   try {
     const result = await db.getAllAsync('SELECT * FROM usuarios ORDER BY id DESC');
@@ -34,7 +31,6 @@ export const getAllUsuarios = async () => {
   }
 };
 
-// Buscar usuário por ID
 export const getUsuarioById = async (id) => {
   try {
     const result = await db.getFirstAsync(
@@ -48,7 +44,6 @@ export const getUsuarioById = async (id) => {
   }
 };
 
-// Criar novo usuário
 export const createUsuario = async (nome, email, idade) => {
   try {
     const result = await db.runAsync(
@@ -67,7 +62,6 @@ export const createUsuario = async (nome, email, idade) => {
   }
 };
 
-// Atualizar usuário
 export const updateUsuario = async (id, nome, email, idade) => {
   try {
     const result = await db.runAsync(
@@ -81,7 +75,6 @@ export const updateUsuario = async (id, nome, email, idade) => {
   }
 };
 
-// Deletar usuário
 export const deleteUsuario = async (id) => {
   try {
     const result = await db.runAsync(
@@ -95,7 +88,6 @@ export const deleteUsuario = async (id) => {
   }
 };
 
-// Limpar todos os usuários (útil para testes)
 export const clearAllUsuarios = async () => {
   try {
     await db.runAsync('DELETE FROM usuarios');

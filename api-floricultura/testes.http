@@ -19,7 +19,6 @@ Content-Type: application/json
   "fk_id_categoria": 2
 }
 
-
 ### 4. ATUALIZAR UM PRODUTO (Mudando o preço do produto 1 devido à inflação)
 PUT http://localhost:3000/produtos/1
 Content-Type: application/json

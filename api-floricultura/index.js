@@ -1,19 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./database');
-const path = require('path'); // <-- 1. INJETADO AQUI NO TOPO
+const path = require('path'); 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// <-- 2. INJETADO AQUI (Antes das rotas)
-// Transforma a pasta 'images' num servidor público de arquivos estáticos
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// ==========================================
-// ROTAS DE PRODUTOS
-// ==========================================
 app.get('/produtos', (req, res) => {
     db.all("SELECT * FROM produtos", [], (err, rows) => {
         if (err) return res.status(500).json({ erro: "Erro ao buscar catálogo do galpão." });
@@ -31,13 +26,12 @@ app.get('/produtos/:id', (req, res) => {
 });
 
 app.post('/produtos', (req, res) => {
-    // Agora recebemos o campo em_promocao do telemóvel
+
     const { nome, descricao, preco, imagem_url, estoque, fk_id_categoria, em_promocao } = req.body;
     if (!nome || !preco) return res.status(400).json({ erro: "Nome e Preço são obrigatórios." });
 
     db.run(
         "INSERT INTO produtos (nome, descricao, preco, imagem_url, estoque, fk_id_categoria, em_promocao) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        // Se o front não mandar nada, assumimos 0 (Não é promoção)
         [nome, descricao, preco, imagem_url, estoque, fk_id_categoria, em_promocao || 0],
         function(err) {
             if (err) return res.status(500).json({ erro: "Falha na inserção do banco." });
@@ -46,9 +40,6 @@ app.post('/produtos', (req, res) => {
     );
 });
 
-// ==========================================
-// ROTAS DE USUÁRIOS
-// ==========================================
 app.post('/usuarios', (req, res) => {
     const { nome, email, senha } = req.body;
     db.run("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)", [nome, email, senha], function(err) {
@@ -57,9 +48,6 @@ app.post('/usuarios', (req, res) => {
     });
 });
 
-// ==========================================
-// ROTA DE CHECKOUT (PEDIDOS E PAGAMENTOS)
-// ==========================================
 app.post('/pedidos', (req, res) => {
     const { fk_id_usuario, fk_id_endereco, valor_total, metodo_pagamento, itens } = req.body;
 
