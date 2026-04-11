@@ -6,8 +6,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
 import HomeScreen from './src/screens/HomeScreen';
-import UsuarioDetailScreen from './src/screens/UsuarioDetailScreen';
-import DatabaseDebugScreen from './src/screens/DatabaseDebugScreen';
 import BuqueScreen from './src/screens/BuqueScreen';
 import ConjuntoScreen from './src/screens/ConjuntoScreen';
 import MudaScreen from './src/screens/MudaScreen';
@@ -45,7 +43,6 @@ function MainApp() {
           <Stack.Screen name="Revisao" component={Revisao} />
           <Stack.Screen name="Pagamento" component={Pagamento} />
           <Stack.Screen name="CarrinhoVazio" component={CarrinhoVazio} />
-          <Stack.Screen name="DatabaseDebug" component={DatabaseDebugScreen} />
           <Stack.Screen name="Produto" component={ProdutoScreen} />
         </Stack.Navigator>
       </NavigationContainer>
