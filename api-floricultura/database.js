@@ -20,6 +20,9 @@ const db = new sqlite3.Database('./floricultura.db', (err) => {
             db.run(`CREATE TABLE IF NOT EXISTS pagamentos (id_pagamento INTEGER PRIMARY KEY AUTOINCREMENT, metodo TEXT NOT NULL, status TEXT DEFAULT 'Pendente', valor REAL NOT NULL, data_pagamento DATETIME DEFAULT CURRENT_TIMESTAMP, fk_id_pedido INTEGER, FOREIGN KEY (fk_id_pedido) REFERENCES pedidos (id_pedido))`);
 
             db.run(`CREATE TABLE IF NOT EXISTS itens_pedido (fk_id_pedido INTEGER, fk_id_produto INTEGER, qtd INTEGER, preco_unit REAL, personalizacao TEXT, PRIMARY KEY (fk_id_pedido, fk_id_produto), FOREIGN KEY (fk_id_pedido) REFERENCES pedidos (id_pedido), FOREIGN KEY (fk_id_produto) REFERENCES produtos (id_produto))`);
+
+            
+            db.run(`CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, email TEXT, senha TEXT)`);
             
             console.log('✅ Todas as tabelas estruturadas e prontas.');
         });

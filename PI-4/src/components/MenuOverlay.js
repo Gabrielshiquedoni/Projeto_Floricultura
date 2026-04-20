@@ -63,6 +63,13 @@ export default function MenuOverlay({ onClose }) {
             <Feather name="edit-3" size={22} color="#00ff00" />
             <Text style={styles.menuText}>Personalizados</Text>
           </TouchableOpacity>
+
+          <View style={{ height: 1, backgroundColor: '#2C3A35', marginVertical: 15 }} />
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('AdminProdutos')}>
+            <Feather name="settings" size={22} color="#00ff00" />
+            <Text style={styles.menuText}>Painel Admin</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.footer}>

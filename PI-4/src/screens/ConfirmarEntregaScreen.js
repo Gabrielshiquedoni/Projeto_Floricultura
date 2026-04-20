@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Rodape from '../components/Rodape';
 import MenuOverlay from '../components/MenuOverlay';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { buscarCep } from '../services/api';
 
 export default function ConfirmarEntregaScreen() {
     const [menuVisible, setMenuVisible] = useState(false);
@@ -14,6 +15,47 @@ export default function ConfirmarEntregaScreen() {
     
     const goToHome = () => {
         navigation.navigate('Home'); 
+    };
+
+    // States do endereço
+    const [cep, setCep] = useState('');
+    const [rua, setRua] = useState('');
+    const [numero, setNumero] = useState('');
+    const [bairro, setBairro] = useState('');
+    const [cidade, setCidade] = useState('');
+    const [estado, setEstado] = useState('');
+    const [buscandoCep, setBuscandoCep] = useState(false);
+
+    // Auto-preenchimento ao digitar 8 dígitos no CEP
+    const handleCepChange = async (texto) => {
+        const cepLimpo = texto.replace(/\D/g, '');
+        
+        // Formata o CEP visualmente: 00000-000
+        if (cepLimpo.length <= 5) {
+            setCep(cepLimpo);
+        } else {
+            setCep(`${cepLimpo.slice(0, 5)}-${cepLimpo.slice(5, 8)}`);
+        }
+
+        // Quando atingir 8 dígitos, busca o CEP
+        if (cepLimpo.length === 8) {
+            try {
+                setBuscandoCep(true);
+                const dados = await buscarCep(cepLimpo);
+                setRua(dados.rua || '');
+                setBairro(dados.bairro || '');
+                setCidade(dados.cidade || '');
+                setEstado(dados.estado || '');
+            } catch (error) {
+                Alert.alert('CEP não encontrado', 'Verifique o CEP digitado e tente novamente.');
+                setRua('');
+                setBairro('');
+                setCidade('');
+                setEstado('');
+            } finally {
+                setBuscandoCep(false);
+            }
+        }
     };
 
   return (
@@ -40,29 +82,104 @@ export default function ConfirmarEntregaScreen() {
 
             <Text style={styles.title}>Confirme a forma de entrega</Text>
 
-            
-            <View style={styles.deliveryRow}>
-            <FontAwesome name="circle-o" size={22} color="#000" />
-            
-            <View style={styles.deliveryInfo}>
-                <Text style={styles.deliveryLabel}>Enviar no meu endereço</Text>
-                <Text style={styles.address}>
-                R. José Galdino da Silva, 548-764 - Interlagos,{"\n"}
-                São Paulo - SP, 04792-000
-                </Text>
-                <Text style={styles.addressType}>Residencial</Text>
+            {/* Formulário de Endereço com CEP */}
+            <Text style={styles.inputLabel}>CEP</Text>
+            <View style={styles.cepRow}>
+                <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    placeholder="00000-000"
+                    placeholderTextColor="#999"
+                    value={cep}
+                    onChangeText={handleCepChange}
+                    keyboardType="numeric"
+                    maxLength={9}
+                />
+                {buscandoCep && (
+                    <ActivityIndicator size="small" color="#1B3A2F" style={{ marginLeft: 10 }} />
+                )}
             </View>
 
-            <Text style={styles.freeText}>Grátis</Text>
+            <Text style={styles.inputLabel}>Rua / Logradouro</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Preenchido automaticamente"
+                placeholderTextColor="#999"
+                value={rua}
+                onChangeText={setRua}
+            />
+
+            <View style={styles.rowInputs}>
+                <View style={{ flex: 1, marginRight: 10 }}>
+                    <Text style={styles.inputLabel}>Número</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Nº"
+                        placeholderTextColor="#999"
+                        value={numero}
+                        onChangeText={setNumero}
+                        keyboardType="numeric"
+                    />
+                </View>
+                <View style={{ flex: 2 }}>
+                    <Text style={styles.inputLabel}>Bairro</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Preenchido automaticamente"
+                        placeholderTextColor="#999"
+                        value={bairro}
+                        onChangeText={setBairro}
+                    />
+                </View>
             </View>
 
-           
+            <View style={styles.rowInputs}>
+                <View style={{ flex: 2, marginRight: 10 }}>
+                    <Text style={styles.inputLabel}>Cidade</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Preenchido automaticamente"
+                        placeholderTextColor="#999"
+                        value={cidade}
+                        onChangeText={setCidade}
+                    />
+                </View>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>UF</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="UF"
+                        placeholderTextColor="#999"
+                        value={estado}
+                        onChangeText={setEstado}
+                        maxLength={2}
+                        autoCapitalize="characters"
+                    />
+                </View>
+            </View>
+
             <View style={styles.divider} />
 
-            
-            <TouchableOpacity>
-            <Text style={styles.changeAddress}>Alterar ou escolher outro endereço</Text>
-            </TouchableOpacity>
+            {/* Resumo do endereço preenchido */}
+            {rua ? (
+                <View style={styles.deliveryRow}>
+                    <FontAwesome name="check-circle" size={22} color="#1B3A2F" />
+                    <View style={styles.deliveryInfo}>
+                        <Text style={styles.deliveryLabel}>Enviar no meu endereço</Text>
+                        <Text style={styles.address}>
+                            {rua}{numero ? `, ${numero}` : ''} - {bairro}{"\n"}
+                            {cidade} - {estado}, {cep}
+                        </Text>
+                    </View>
+                    <Text style={styles.freeText}>Grátis</Text>
+                </View>
+            ) : (
+                <View style={styles.deliveryRow}>
+                    <FontAwesome name="circle-o" size={22} color="#999" />
+                    <View style={styles.deliveryInfo}>
+                        <Text style={[styles.deliveryLabel, { color: '#999' }]}>Preencha o CEP acima</Text>
+                    </View>
+                </View>
+            )}
         </View>
 
        
@@ -88,7 +205,11 @@ export default function ConfirmarEntregaScreen() {
             <Text style={styles.backText}>Voltar</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.nextBtn} onPress={() => (navigation.navigate('CheckoutPagamento'))}>
+            <TouchableOpacity 
+                style={[styles.nextBtn, !rua && styles.nextBtnDisabled]} 
+                onPress={() => (navigation.navigate('CheckoutPagamento'))}
+                disabled={!rua}
+            >
             <Text style={styles.nextText}>Continuar</Text>
             </TouchableOpacity>
         </View>
@@ -147,6 +268,34 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 20,
+  },
+
+  // Inputs do endereço
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 5,
+  },
+
+  input: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 15,
+    color: '#000',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+
+  cepRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  rowInputs: {
+    flexDirection: 'row',
   },
 
   deliveryRow: {
@@ -248,6 +397,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
+  },
+
+  nextBtnDisabled: {
+    backgroundColor: "#2C3A35",
+    opacity: 0.5,
   },
 
   nextText: {

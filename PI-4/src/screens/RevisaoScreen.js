@@ -115,7 +115,7 @@ export default function RevisaoScreen() {
                 <Text style={styles.btnVoltarText}>Voltar</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.btnContinuar} onPress={() => (navigation.navigate("Pagamento"))}>
+                <TouchableOpacity style={styles.btnContinuar} onPress={() => (navigation.navigate("ConfirmacaoPagamento"))}>
                 <Text style={styles.btnContinuarText}>Continuar</Text>
                 </TouchableOpacity>
             </View>
