@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -7,17 +7,18 @@ import Rodape from '../components/Rodape';
 import MenuOverlay from '../components/MenuOverlay';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { buscarCep } from '../services/api';
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function ConfirmarEntregaScreen() {
     const [menuVisible, setMenuVisible] = useState(false);
     
     const navigation = useNavigation();
+    const { usuarioLogado } = useContext(AuthContext);
     
     const goToHome = () => {
         navigation.navigate('Home'); 
     };
 
-    // States do endereço
     const [cep, setCep] = useState('');
     const [rua, setRua] = useState('');
     const [numero, setNumero] = useState('');
@@ -26,18 +27,15 @@ export default function ConfirmarEntregaScreen() {
     const [estado, setEstado] = useState('');
     const [buscandoCep, setBuscandoCep] = useState(false);
 
-    // Auto-preenchimento ao digitar 8 dígitos no CEP
     const handleCepChange = async (texto) => {
         const cepLimpo = texto.replace(/\D/g, '');
         
-        // Formata o CEP visualmente: 00000-000
         if (cepLimpo.length <= 5) {
             setCep(cepLimpo);
         } else {
             setCep(`${cepLimpo.slice(0, 5)}-${cepLimpo.slice(5, 8)}`);
         }
 
-        // Quando atingir 8 dígitos, busca o CEP
         if (cepLimpo.length === 8) {
             try {
                 setBuscandoCep(true);
@@ -56,6 +54,11 @@ export default function ConfirmarEntregaScreen() {
                 setBuscandoCep(false);
             }
         }
+    };
+
+    const handleContinuar = () => {
+        const endereco = { rua, numero, bairro, cidade, estado, cep };
+        navigation.navigate('CheckoutPagamento', { endereco, usuario: usuarioLogado });
     };
 
   return (
@@ -82,7 +85,6 @@ export default function ConfirmarEntregaScreen() {
 
             <Text style={styles.title}>Confirme a forma de entrega</Text>
 
-            {/* Formulário de Endereço com CEP */}
             <Text style={styles.inputLabel}>CEP</Text>
             <View style={styles.cepRow}>
                 <TextInput
@@ -159,7 +161,6 @@ export default function ConfirmarEntregaScreen() {
 
             <View style={styles.divider} />
 
-            {/* Resumo do endereço preenchido */}
             {rua ? (
                 <View style={styles.deliveryRow}>
                     <FontAwesome name="check-circle" size={22} color="#1B3A2F" />
@@ -207,7 +208,7 @@ export default function ConfirmarEntregaScreen() {
 
             <TouchableOpacity 
                 style={[styles.nextBtn, !rua && styles.nextBtnDisabled]} 
-                onPress={() => (navigation.navigate('CheckoutPagamento'))}
+                onPress={handleContinuar}
                 disabled={!rua}
             >
             <Text style={styles.nextText}>Continuar</Text>
@@ -270,7 +271,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  // Inputs do endereço
   inputLabel: {
     fontSize: 13,
     fontWeight: '600',

@@ -19,6 +19,7 @@ import CarrinhoVazio from './src/screens/CarrinhoVazioScreen';
 import ProdutoScreen from './src/screens/ProdutoScreen';
 import AdminProdutosScreen from './src/screens/AdminProdutosScreen';
 import AdminCadastroScreen from './src/screens/AdminCadastroScreen';
+import AdminLoginScreen from './src/screens/AdminLoginScreen';
 import ConfirmacaoPagamentoScreen from './src/screens/ConfirmacaoPagamentoScreen';
 
 
@@ -47,6 +48,7 @@ function MainApp() {
           <Stack.Screen name="Pagamento" component={Pagamento} />
           <Stack.Screen name="CarrinhoVazio" component={CarrinhoVazio} />
           <Stack.Screen name="Produto" component={ProdutoScreen} />
+          <Stack.Screen name="AdminLogin" component={AdminLoginScreen} />
           <Stack.Screen name="AdminProdutos" component={AdminProdutosScreen} />
           <Stack.Screen name="AdminCadastro" component={AdminCadastroScreen} />
           <Stack.Screen name="ConfirmacaoPagamento" component={ConfirmacaoPagamentoScreen} />

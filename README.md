@@ -15,6 +15,7 @@
   - [4. Confirmação de Pagamento](#4-confirmação-de-pagamento)
   - [5. Painel Admin (CRUD de Produtos)](#5-painel-admin-crud-de-produtos)
   - [6. Login e Cadastro](#6-login-e-cadastro)
+  - [7. Segurança e Controle de Acesso](#7-segurança-e-controle-de-acesso)
 - [API — Rotas Disponíveis](#-api--rotas-disponíveis)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Changelog](#-changelog)
@@ -170,12 +171,22 @@ Após revisar o pedido na tela de Revisão:
 
 ### 5. Painel Admin (CRUD de Produtos)
 
-**Caminho**: Qualquer tela → Menu ☰ → **Painel Admin**
+**Caminho**: Qualquer tela → Menu ☰ → **Painel Admin** → Login Admin
+
+**Credenciais de teste do admin:**
+
+| Campo | Valor |
+|-------|-------|
+| **E-mail** | `admin@teste.com` |
+| **Senha** | `123456` |
+
+> ⚠️ O acesso ao painel é protegido. Ao tocar em "Painel Admin" no menu, você será direcionado à tela de login. Use as credenciais acima para entrar.
 
 #### 📋 Listar Produtos
 1. Toque no **☰ menu** (canto superior direito)
 2. Toque em **"Painel Admin"** (último item, abaixo do separador)
-3. Você verá todos os produtos cadastrados em cards com:
+3. Faça login com as credenciais acima
+4. Você verá todos os produtos cadastrados em cards com:
    - Imagem, nome, preço e estoque
    - Botões de **editar** (✏️) e **excluir** (🗑️)
 
@@ -213,9 +224,28 @@ Após revisar o pedido na tela de Revisão:
 
 1. Toque no ícone de **usuário** (👤) no header, ou no botão **"Fazer Login"** no menu
 2. O modal de autenticação abrirá com duas opções:
-   - **Login**: E-mail + Senha → botão "Entrar"
-   - **Cadastro**: Nome, E-mail, CPF, Telefone, Senha, Confirmar Senha → botão "Cadastrar"
-3. Alterne entre Login e Cadastro pelos links no rodapé do modal
+   - **Login**: E-mail + Senha → botão "Entrar" → valida no servidor via `POST /api/usuarios/login`
+   - **Cadastro**: Nome, E-mail, CPF, Telefone, Senha, Confirmar Senha → botão "Cadastrar" → cria no servidor via `POST /api/usuarios/cadastro`
+3. Ao logar/cadastrar com sucesso, o usuário é salvo no `AuthContext` e o modal fecha automaticamente
+4. Alterne entre Login e Cadastro pelos links no rodapé do modal
+
+---
+
+### 7. Segurança e Controle de Acesso
+
+**Trava de Login no Checkout:**
+- O botão "Finalizar compra" no carrinho verifica se há um usuário logado
+- Se não houver, exibe alerta e abre o modal de login automaticamente
+- Só permite avançar para a tela de entrega após o login
+
+**Propagação de Dados no Fluxo:**
+- Ao avançar na tela de entrega, os dados do endereço (CEP, rua, número, bairro, cidade, UF) e do usuário logado são passados por parâmetros de navegação
+- A tela de Revisão exibe dinamicamente: nome do comprador, e-mail, endereço completo, método de pagamento e itens do carrinho
+
+**Proteção do Painel Admin:**
+- O menu "Painel Admin" agora redireciona para uma tela de login administrativo
+- Apenas credenciais válidas de admin (verificadas via `POST /api/admins/login`) liberam acesso ao CRUD de produtos
+- Utiliza `navigation.replace` para impedir retorno com o botão voltar
 
 ---
 
@@ -264,7 +294,10 @@ O back-end roda em `http://localhost:3000`. Todas as rotas de escrita usam **que
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| `POST` | `/usuarios` | Cadastra usuário |
+| `POST` | `/usuarios` | Cadastra usuário (legado) |
+| `POST` | `/api/usuarios/cadastro` | Cadastra usuário com validação |
+| `POST` | `/api/usuarios/login` | Login de cliente |
+| `POST` | `/api/admins/login` | Login de administrador |
 | `POST` | `/pedidos` | Cria pedido + pagamento + itens |
 
 ---
@@ -305,15 +338,16 @@ Projeto_Floricultura/
 │   │   │   ├── MudaScreen.js              ← Categoria Mudas
 │   │   │   ├── PersonalizadosScreen.js    ← Categoria Personalizados
 │   │   │   ├── ProdutoScreen.js           ← Detalhes do produto
-│   │   │   ├── CarrinhoComItemScreen.js   ← Carrinho com itens
+│   │   │   ├── CarrinhoComItemScreen.js   ← Carrinho com itens (+ trava de login) ✨
 │   │   │   ├── CarrinhoVazioScreen.js     ← Carrinho vazio
-│   │   │   ├── ConfirmarEntregaScreen.js  ← Endereço + CEP (auto-fill) ✨
-│   │   │   ├── CheckoutPagamentoScreen.js ← Escolha de pagamento
-│   │   │   ├── RevisaoScreen.js           ← Revisão do pedido
+│   │   │   ├── ConfirmarEntregaScreen.js  ← Endereço + CEP (propaga dados) ✨
+│   │   │   ├── CheckoutPagamentoScreen.js ← Escolha de pagamento (propaga dados) ✨
+│   │   │   ├── RevisaoScreen.js           ← Revisão com dados dinâmicos ✨
 │   │   │   ├── PagamentoScreen.js         ← Tela Pix
-│   │   │   ├── ConfirmacaoPagamentoScreen.js ← Sucesso do pedido ✨
-│   │   │   ├── AdminProdutosScreen.js     ← Listagem admin ✨
-│   │   │   └── AdminCadastroScreen.js     ← Form admin ✨
+│   │   │   ├── ConfirmacaoPagamentoScreen.js ← Sucesso do pedido
+│   │   │   ├── AdminLoginScreen.js        ← Login admin (gatekeeper) ✨
+│   │   │   ├── AdminProdutosScreen.js     ← Listagem admin
+│   │   │   └── AdminCadastroScreen.js     ← Form admin
 │   │   │
 │   │   └── services/
 │   │       ├── api.js             ← Camada de serviços (fetch) ✨
@@ -329,6 +363,33 @@ Projeto_Floricultura/
 ---
 
 ## 📝 Changelog
+
+### v2.1.0 — 20/04/2026
+
+#### 🆕 Novidades
+
+**Back-end**
+- Rota `POST /api/usuarios/cadastro` com validação de campos e checagem de e-mail duplicado (status 409)
+- Rota `POST /api/usuarios/login` com validação de credenciais (status 401 se inválido)
+- Rota `POST /api/admins/login` como gatekeeper do painel administrativo
+- Todas as novas rotas utilizam queries parametrizadas (anti SQL Injection)
+
+**Front-end**
+- **AuthModal** agora consome a API real via `fetch` (login e cadastro funcionais)
+- **Trava de segurança no Carrinho**: botão "Finalizar compra" exige login — se o usuário não estiver logado, exibe alerta e abre o modal de autenticação
+- **Propagação de dados no checkout**: endereço e dados do usuário são passados via parâmetros de navegação ao longo de todo o fluxo (Entrega → Pagamento → Revisão)
+- **RevisaoScreen dinâmica**: exibe nome do comprador, e-mail, endereço completo, método de pagamento e itens do carrinho em tempo real
+- **AdminLoginScreen (NOVA)**: tela de login exclusiva para administradores, funciona como gatekeeper — só libera acesso ao CRUD de produtos com credenciais válidas
+- **Menu atualizado**: link "Painel Admin" redireciona para a tela de login admin (não mais diretamente ao painel)
+- **AuthContext** aprimorado com função `logout` dedicada
+- **Camada de serviços** (`api.js`): novas funções `cadastrarUsuario`, `loginUsuario` e `loginAdmin`
+
+#### 🔒 Segurança
+- Checkout protegido por autenticação obrigatória
+- Painel admin protegido por login separado com validação server-side
+- Navegação admin usa `replace` para impedir retorno via botão voltar
+
+---
 
 ### v2.0.0 — 20/04/2026
 

@@ -2,9 +2,12 @@
   "expo": {
     "name": "Jardim Encantado",
     "slug": "node-sqlite-crud",
-    "version": "1.0.0",
+    "version": "2.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "updates": {
+      "enabled": false
+    },
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"

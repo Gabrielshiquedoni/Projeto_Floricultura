@@ -4,7 +4,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalType, setModalType] = useState('login'); 
+  const [modalType, setModalType] = useState('login');
   const [usuarioLogado, setUsuarioLogado] = useState(null);
 
   const openAuthModal = (type = 'login') => {
@@ -14,9 +14,14 @@ export const AuthProvider = ({ children }) => {
 
   const closeAuthModal = () => setModalVisible(false);
 
+  const logout = () => {
+    setUsuarioLogado(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ 
-      modalVisible, modalType, openAuthModal, closeAuthModal, setModalType, usuarioLogado, setUsuarioLogado 
+    <AuthContext.Provider value={{
+      modalVisible, modalType, openAuthModal, closeAuthModal, setModalType,
+      usuarioLogado, setUsuarioLogado, logout
     }}>
       {children}
     </AuthContext.Provider>

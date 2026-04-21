@@ -1,16 +1,18 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants'; 
 import MenuOverlay from '../components/MenuOverlay'; 
 import { CartContext } from '../contexts/CartContext';
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function CarrinhoComItemScreen() {
   const navigation = useNavigation();
   
   const { carrinho, adicionarAoCarrinho, removerDoCarrinho, diminuirQuantidade } = useContext(CartContext);
+  const { usuarioLogado, openAuthModal } = useContext(AuthContext);
   const [menuVisible, setMenuVisible] = useState(false);
 
   const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
@@ -113,7 +115,14 @@ export default function CarrinhoComItemScreen() {
 
         <TouchableOpacity 
           style={styles.checkoutButton}
-          onPress={() => navigation.navigate("ConfirmarEntrega")} 
+          onPress={() => {
+            if (!usuarioLogado) {
+              Alert.alert('Login necessário', 'Faça login para finalizar sua compra.');
+              openAuthModal('login');
+              return;
+            }
+            navigation.navigate('ConfirmarEntrega');
+          }} 
         >
           <Text style={styles.checkoutButtonText}>Finalizar compra</Text>
         </TouchableOpacity>

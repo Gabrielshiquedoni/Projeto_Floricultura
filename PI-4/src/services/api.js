@@ -80,3 +80,36 @@ export const buscarCep = async (cep) => {
     throw error;
   }
 };
+
+export const cadastrarUsuario = async (data) => {
+  const response = await fetch(`${BASE_URL}/api/usuarios/cadastro`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  const json = await response.json();
+  if (!response.ok) throw new Error(json.erro || 'Erro ao cadastrar');
+  return json;
+};
+
+export const loginUsuario = async (email, senha) => {
+  const response = await fetch(`${BASE_URL}/api/usuarios/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, senha }),
+  });
+  const json = await response.json();
+  if (!response.ok) throw new Error(json.erro || 'Erro ao fazer login');
+  return json;
+};
+
+export const loginAdmin = async (email, senha) => {
+  const response = await fetch(`${BASE_URL}/api/admins/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, senha }),
+  });
+  const json = await response.json();
+  if (!response.ok) throw new Error(json.erro || 'Credenciais inválidas');
+  return json;
+};

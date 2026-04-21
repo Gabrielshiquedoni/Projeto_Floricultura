@@ -1,20 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Rodape from '../components/Rodape';
 import MenuOverlay from '../components/MenuOverlay';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather, MaterialIcons, Entypo } from "@expo/vector-icons";
+import { CartContext } from '../contexts/CartContext';
+import Constants from 'expo-constants';
 
 export default function RevisaoScreen() {
     const [menuVisible, setMenuVisible] = useState(false);
           
     const navigation = useNavigation();
+    const route = useRoute();
+    const { endereco, usuario, metodoPagamento } = route.params || {};
+    const { carrinho } = useContext(CartContext);
+
+    const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
+    const ipComputador = hostUri ? hostUri.split(':')[0] : 'localhost';
 
     const goToHome = () => {
         navigation.navigate('Home'); 
     };
+
+    const nomeComprador = usuario?.nome || 'Cliente';
+    const emailComprador = usuario?.email || '';
+
+    const enderecoCompleto = endereco
+        ? `${endereco.rua}${endereco.numero ? `, ${endereco.numero}` : ''} - ${endereco.bairro}\n${endereco.cidade} - ${endereco.estado}, ${endereco.cep}`
+        : 'Endereço não informado';
+
+    const metodoLabel = {
+        pix: 'Pix',
+        cartao: 'Cartão de Crédito',
+        boleto: 'Boleto Bancário',
+        saldo: 'Saldo em Conta',
+    };
+    const metodoPagamentoLabel = metodoLabel[metodoPagamento] || 'Não selecionado';
+
+    const total = carrinho.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
+    const totalFormatado = total.toFixed(2).replace('.', ',');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,8 +69,8 @@ export default function RevisaoScreen() {
                 <View style={styles.section}>
                 <MaterialIcons name="person-outline" size={22} color="#000" style={{ marginRight: 10 }} />
                 <View>
-                    <Text style={styles.sectionTitle}>Nome cliente</Text>
-                    <Text style={styles.sectionSubtitle}>CPF 111.111.111-11</Text>
+                    <Text style={styles.sectionTitle}>{nomeComprador}</Text>
+                    <Text style={styles.sectionSubtitle}>{emailComprador}</Text>
                 </View>
                 </View>
 
@@ -54,27 +80,47 @@ export default function RevisaoScreen() {
                 <View style={styles.section}>
                 <Entypo name="location-pin" size={22} color="#000" style={{ marginRight: 10 }} />
                 <View>
-                    <Text style={styles.sectionTitle}>R. José Galdino da Silva,</Text>
+                    <Text style={styles.sectionTitle}>{endereco ? `${endereco.rua}${endereco.numero ? `, ${endereco.numero}` : ''}` : 'Endereço não informado'}</Text>
                     <Text style={styles.sectionSubtitle}>Enviar no meu endereço</Text>
+                    {endereco && (
+                        <Text style={styles.sectionSubtitle}>{endereco.bairro} - {endereco.cidade}/{endereco.estado}</Text>
+                    )}
                 </View>
                 </View>
 
                 <View style={styles.divider} />
 
                 
-                <View style={styles.produtoBox}>
-                <Image
-                    source={require('../../assets/images/rosa7.jpeg')}
-                    style={styles.produtoImagem}
-                />
-
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.produtoEntrega}>
-                    Chegará no seu endereço entre terça-feira e sexta-feira
-                    </Text>
-                    <Text style={styles.produtoDescricao}>Descrição do produto + quantidade</Text>
-                </View>
-                </View>
+                {carrinho.length > 0 ? carrinho.map((item) => {
+                    let imagemProduto = require('../../assets/images/LogoSemFundo.png');
+                    if (item.imagem_url && item.imagem_url.length > 4) {
+                        imagemProduto = { uri: `http://${ipComputador}:3000/images/${item.imagem_url}` };
+                    }
+                    return (
+                        <View key={item.id_produto} style={styles.produtoBox}>
+                            <Image source={imagemProduto} style={styles.produtoImagem} />
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.produtoEntrega}>
+                                    Chegará no seu endereço entre terça-feira e sexta-feira
+                                </Text>
+                                <Text style={styles.produtoDescricao}>{item.nome} x{item.quantidade}</Text>
+                            </View>
+                        </View>
+                    );
+                }) : (
+                    <View style={styles.produtoBox}>
+                        <Image
+                            source={require('../../assets/images/LogoSemFundo.png')}
+                            style={styles.produtoImagem}
+                        />
+                        <View style={{ flex: 1 }}>
+                            <Text style={styles.produtoEntrega}>
+                                Chegará no seu endereço entre terça-feira e sexta-feira
+                            </Text>
+                            <Text style={styles.produtoDescricao}>Nenhum item</Text>
+                        </View>
+                    </View>
+                )}
 
                 <View style={styles.divider} />
 
@@ -83,8 +129,8 @@ export default function RevisaoScreen() {
                 <Feather name="credit-card" size={20} color="#000" />
 
                 <View style={{ marginLeft: 12 }}>
-                    <Text style={styles.sectionTitle}>Pix</Text>
-                    <Text style={styles.pagamentoPreco}>R$ 218,00</Text>
+                    <Text style={styles.sectionTitle}>{metodoPagamentoLabel}</Text>
+                    <Text style={styles.pagamentoPreco}>R$ {totalFormatado}</Text>
 
                     <Text style={styles.pagamentoInfo}>
                     Ao confirmar a compra, você terá as informações para pagar.
@@ -100,18 +146,23 @@ export default function RevisaoScreen() {
                 <View style={styles.resumoBox}>
                 <Text style={styles.resumoTitle}>Resumo da compra:</Text>
 
-                <Text style={styles.resumoLine}>Produto: R$ 199,99</Text>
+                {carrinho.map((item) => {
+                    const precoItem = (item.preco * item.quantidade).toFixed(2).replace('.', ',');
+                    return (
+                        <Text key={item.id_produto} style={styles.resumoLine}>{item.nome} ({item.quantidade}x): R$ {precoItem}</Text>
+                    );
+                })}
                 <Text style={styles.resumoLine}>Frete:   GRÁTIS</Text>
 
                 <Text style={[styles.resumoLine, { marginTop: 12 }]}>
-                    Total: <Text style={{ fontWeight: "bold" }}>R$ 199,99</Text>
+                    Total: <Text style={{ fontWeight: "bold" }}>R$ {totalFormatado}</Text>
                 </Text>
                 </View>
             </View>
 
             
             <View style={styles.btnRow}>
-                <TouchableOpacity style={styles.btnVoltar} onPress={() => (navigation.navigate("CheckoutPagamento"))}>
+                <TouchableOpacity style={styles.btnVoltar} onPress={() => (navigation.navigate("CheckoutPagamento", { endereco, usuario }))}>
                 <Text style={styles.btnVoltarText}>Voltar</Text>
                 </TouchableOpacity>
 

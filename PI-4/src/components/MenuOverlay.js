@@ -9,7 +9,7 @@ const { width } = Dimensions.get('window');
 export default function MenuOverlay({ onClose }) {
   const navigation = useNavigation();
   
-  const { usuarioLogado, setUsuarioLogado, openAuthModal } = useContext(AuthContext);
+  const { usuarioLogado, logout, openAuthModal } = useContext(AuthContext);
 
   const navigateTo = (screen) => {
     onClose();
@@ -19,7 +19,7 @@ export default function MenuOverlay({ onClose }) {
   const handleLoginLogout = () => {
     onClose();
     if (usuarioLogado) {
-      setUsuarioLogado(null);
+      logout();
       alert("Você saiu da conta.");
     } else {
       openAuthModal('login'); 
@@ -66,7 +66,7 @@ export default function MenuOverlay({ onClose }) {
 
           <View style={{ height: 1, backgroundColor: '#2C3A35', marginVertical: 15 }} />
 
-          <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('AdminProdutos')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('AdminLogin')}>
             <Feather name="settings" size={22} color="#00ff00" />
             <Text style={styles.menuText}>Painel Admin</Text>
           </TouchableOpacity>

@@ -1,26 +1,64 @@
 import React, { useContext, useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { AuthContext } from '../contexts/AuthContext';
+import { loginUsuario, cadastrarUsuario } from '../services/api';
 
 export default function AuthModal() {
-  const { modalVisible, closeAuthModal, modalType, setModalType } = useContext(AuthContext);
-
+  const { modalVisible, closeAuthModal, modalType, setModalType, setUsuarioLogado } = useContext(AuthContext);
 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [formCad, setFormCad] = useState({ nome: '', email: '', cpf: '', tel: '', senha: '', confirmarSenha: '' });
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    alert(`Tentando logar: ${email}`); 
-  };
-
-  const handleCadastro = () => {
-    if (formCad.senha !== formCad.confirmarSenha) {
-      alert("As senhas não coincidem!");
+  const handleLogin = async () => {
+    if (!email || !senha) {
+      Alert.alert('Atenção', 'Preencha e-mail e senha.');
       return;
     }
-    alert("Pronto para criar usuário!"); 
+    try {
+      setLoading(true);
+      const dados = await loginUsuario(email, senha);
+      setUsuarioLogado(dados);
+      closeAuthModal();
+      setEmail('');
+      setSenha('');
+      Alert.alert('Bem-vindo(a)!', `Olá, ${dados.nome}!`);
+    } catch (error) {
+      Alert.alert('Erro no login', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCadastro = async () => {
+    if (formCad.senha !== formCad.confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem!');
+      return;
+    }
+    if (!formCad.nome || !formCad.email || !formCad.senha) {
+      Alert.alert('Atenção', 'Nome, e-mail e senha são obrigatórios.');
+      return;
+    }
+    try {
+      setLoading(true);
+      const dados = await cadastrarUsuario({
+        nome: formCad.nome,
+        email: formCad.email,
+        senha: formCad.senha,
+        cpf: formCad.cpf,
+        tel: formCad.tel,
+      });
+      setUsuarioLogado(dados);
+      closeAuthModal();
+      setFormCad({ nome: '', email: '', cpf: '', tel: '', senha: '', confirmarSenha: '' });
+      Alert.alert('Conta criada!', `Bem-vindo(a), ${dados.nome}!`);
+    } catch (error) {
+      Alert.alert('Erro no cadastro', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!modalVisible) return null;
@@ -60,13 +98,17 @@ export default function AuthModal() {
 
                 <TouchableOpacity 
                   style={styles.forgotPassword} 
-                  onPress={() => alert("Um link de recuperação será enviado para o seu e-mail.")}
+                  onPress={() => Alert.alert("Recuperação", "Um link de recuperação será enviado para o seu e-mail.")}
                 >
                   <Text style={styles.forgotText}>Esqueceu a senha?</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.actionButton} onPress={handleLogin}>
-                  <Text style={styles.actionButtonText}>Entrar</Text>
+                <TouchableOpacity style={styles.actionButton} onPress={handleLogin} disabled={loading}>
+                  {loading ? (
+                    <ActivityIndicator color="#1B1F1D" />
+                  ) : (
+                    <Text style={styles.actionButtonText}>Entrar</Text>
+                  )}
                 </TouchableOpacity>
 
                 <View style={styles.switchContainer}>
@@ -79,30 +121,34 @@ export default function AuthModal() {
             ) : (
               <View style={styles.formContainer}>
                 <Text style={styles.label}>Nome Completo</Text>
-                <TextInput style={styles.input} placeholder="Digite seu nome" placeholderTextColor="#A0AAB2" onChangeText={(text) => setFormCad({...formCad, nome: text})} />
+                <TextInput style={styles.input} placeholder="Digite seu nome" placeholderTextColor="#A0AAB2" value={formCad.nome} onChangeText={(text) => setFormCad({...formCad, nome: text})} />
 
                 <Text style={styles.label}>E-mail</Text>
-                <TextInput style={styles.input} placeholder="Digite seu e-mail" placeholderTextColor="#A0AAB2" keyboardType="email-address" autoCapitalize="none" onChangeText={(text) => setFormCad({...formCad, email: text})} />
+                <TextInput style={styles.input} placeholder="Digite seu e-mail" placeholderTextColor="#A0AAB2" keyboardType="email-address" autoCapitalize="none" value={formCad.email} onChangeText={(text) => setFormCad({...formCad, email: text})} />
 
                 <View style={styles.row}>
                   <View style={[styles.halfInput, {marginRight: 10}]}>
                     <Text style={styles.label}>CPF</Text>
-                    <TextInput style={styles.input} placeholder="000.000.000-00" placeholderTextColor="#A0AAB2" keyboardType="numeric" onChangeText={(text) => setFormCad({...formCad, cpf: text})} />
+                    <TextInput style={styles.input} placeholder="000.000.000-00" placeholderTextColor="#A0AAB2" keyboardType="numeric" value={formCad.cpf} onChangeText={(text) => setFormCad({...formCad, cpf: text})} />
                   </View>
                   <View style={styles.halfInput}>
                     <Text style={styles.label}>Telefone</Text>
-                    <TextInput style={styles.input} placeholder="(00) 00000-0000" placeholderTextColor="#A0AAB2" keyboardType="phone-pad" onChangeText={(text) => setFormCad({...formCad, tel: text})} />
+                    <TextInput style={styles.input} placeholder="(00) 00000-0000" placeholderTextColor="#A0AAB2" keyboardType="phone-pad" value={formCad.tel} onChangeText={(text) => setFormCad({...formCad, tel: text})} />
                   </View>
                 </View>
 
                 <Text style={styles.label}>Senha</Text>
-                <TextInput style={styles.input} placeholder="Crie uma senha forte" placeholderTextColor="#A0AAB2" secureTextEntry onChangeText={(text) => setFormCad({...formCad, senha: text})} />
+                <TextInput style={styles.input} placeholder="Crie uma senha forte" placeholderTextColor="#A0AAB2" secureTextEntry value={formCad.senha} onChangeText={(text) => setFormCad({...formCad, senha: text})} />
 
                 <Text style={styles.label}>Confirmar Senha</Text>
-                <TextInput style={styles.input} placeholder="Repita a senha" placeholderTextColor="#A0AAB2" secureTextEntry onChangeText={(text) => setFormCad({...formCad, confirmarSenha: text})} />
+                <TextInput style={styles.input} placeholder="Repita a senha" placeholderTextColor="#A0AAB2" secureTextEntry value={formCad.confirmarSenha} onChangeText={(text) => setFormCad({...formCad, confirmarSenha: text})} />
 
-                <TouchableOpacity style={styles.actionButton} onPress={handleCadastro}>
-                  <Text style={styles.actionButtonText}>Cadastrar</Text>
+                <TouchableOpacity style={styles.actionButton} onPress={handleCadastro} disabled={loading}>
+                  {loading ? (
+                    <ActivityIndicator color="#1B1F1D" />
+                  ) : (
+                    <Text style={styles.actionButtonText}>Cadastrar</Text>
+                  )}
                 </TouchableOpacity>
 
                 <View style={styles.switchContainer}>

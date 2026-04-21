@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { Feather, FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Rodape from '../components/Rodape';
 import MenuOverlay from '../components/MenuOverlay';
@@ -12,9 +12,19 @@ export default function CheckoutPagamento() {
     const [menuVisible, setMenuVisible] = useState(false);
       
     const navigation = useNavigation();
+    const route = useRoute();
+    const { endereco, usuario } = route.params || {};
 
     const goToHome = () => {
         navigation.navigate('Home'); 
+    };
+
+    const handleContinuar = () => {
+        navigation.navigate('Revisao', {
+            endereco,
+            usuario,
+            metodoPagamento: selected,
+        });
     };
 
     return (
@@ -116,7 +126,7 @@ export default function CheckoutPagamento() {
                         <Text style={styles.btnVoltarText}>Voltar</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.btnContinuar} onPress={() => navigation.navigate("Revisao")}>
+                    <TouchableOpacity style={styles.btnContinuar} onPress={handleContinuar}>
                     <Text style={styles.btnContinuarText}>Continuar</Text>
                     </TouchableOpacity>
                 </View>

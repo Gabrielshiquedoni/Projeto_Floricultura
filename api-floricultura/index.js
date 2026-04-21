@@ -93,15 +93,65 @@ app.delete('/api/produtos/:id', (req, res) => {
     );
 });
 
-// ========================
-// CADASTRO DE USUÁRIOS
-// ========================
-
 app.post('/usuarios', (req, res) => {
     const { nome, email, senha } = req.body;
     db.run("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)", [nome, email, senha], function(err) {
         if (err) return res.status(400).json({ erro: err.message });
         res.json({ id: this.lastID, nome, email });
+    });
+});
+
+app.post('/api/usuarios/cadastro', (req, res) => {
+    const { nome, email, senha, cpf, tel } = req.body;
+
+    if (!nome || !email || !senha) {
+        return res.status(400).json({ erro: "Nome, e-mail e senha são obrigatórios." });
+    }
+
+    db.get("SELECT id_usuario FROM usuarios WHERE email = ?", [email], (err, row) => {
+        if (err) return res.status(500).json({ erro: "Erro interno do servidor." });
+        if (row) return res.status(409).json({ erro: "Este e-mail já está cadastrado." });
+
+        db.run(
+            "INSERT INTO usuarios (nome, email, senha, cpf, tel) VALUES (?, ?, ?, ?, ?)",
+            [nome, email, senha, cpf || null, tel || null],
+            function(err) {
+                if (err) return res.status(500).json({ erro: "Erro ao cadastrar usuário." });
+                res.status(201).json({ id_usuario: this.lastID, nome, email });
+            }
+        );
+    });
+});
+
+app.post('/api/usuarios/login', (req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({ erro: "E-mail e senha são obrigatórios." });
+    }
+
+    db.get("SELECT id_usuario, nome, email, senha FROM usuarios WHERE email = ?", [email], (err, row) => {
+        if (err) return res.status(500).json({ erro: "Erro interno do servidor." });
+        if (!row) return res.status(401).json({ erro: "E-mail ou senha inválidos." });
+        if (row.senha !== senha) return res.status(401).json({ erro: "E-mail ou senha inválidos." });
+
+        res.json({ id_usuario: row.id_usuario, nome: row.nome, email: row.email });
+    });
+});
+
+app.post('/api/admins/login', (req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({ erro: "E-mail e senha são obrigatórios." });
+    }
+
+    db.get("SELECT id, nome, email, senha FROM admins WHERE email = ?", [email], (err, row) => {
+        if (err) return res.status(500).json({ erro: "Erro interno do servidor." });
+        if (!row) return res.status(401).json({ erro: "Credenciais de administrador inválidas." });
+        if (row.senha !== senha) return res.status(401).json({ erro: "Credenciais de administrador inválidas." });
+
+        res.json({ id: row.id, nome: row.nome, email: row.email });
     });
 });
 
