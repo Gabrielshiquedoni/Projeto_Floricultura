@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./database');
-const path = require('path'); 
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -372,6 +372,70 @@ app.get('/api/cep/:cep', async (req, res) => {
 // ========================
 // SERVIDOR
 // ========================
+
+app.get('/admin/export', (req, res) => {
+  db.serialize(() => {
+
+    const data = {};
+
+    db.all(`
+      SELECT p.*, c.nome as categoria_nome
+      FROM produtos p
+      LEFT JOIN categorias c ON p.fk_id_categoria = c.id_categoria
+    `, [], (err, produtos) => {
+
+      if (err) return res.status(500).json(err);
+
+      data.produtos = produtos.map(p => ({
+        id: p.id_produto,
+        nome: p.nome,
+        descricao: p.descricao,
+        preco: p.preco,
+        estoque: p.estoque,
+        em_promocao: p.em_promocao,
+        categoria: p.categoria_nome
+      }));
+
+      db.all(`
+        SELECT id_usuario, nome, email, cpf, tel, data_cadastro
+        FROM usuarios
+      `, [], (err, usuarios) => {
+
+        if (err) return res.status(500).json(err);
+
+        db.all(`SELECT * FROM enderecos`, [], (err, enderecos) => {
+
+          if (err) return res.status(500).json(err);
+
+          db.all(`SELECT * FROM pedidos`, [], (err, pedidos) => {
+
+            if (err) return res.status(500).json(err);
+
+            db.all(`SELECT * FROM itens_pedido`, [], (err, itens) => {
+
+              if (err) return res.status(500).json(err);
+
+              data.clientes = usuarios.map(user => ({
+                ...user,
+                enderecos: enderecos.filter(e => e.fk_id_usuario === user.id_usuario),
+                pedidos: pedidos
+                  .filter(p => p.fk_id_usuario === user.id_usuario)
+                  .map(pedido => ({
+                    ...pedido,
+                    itens: itens.filter(i => i.fk_id_pedido === pedido.id_pedido)
+                  }))
+              }));
+
+              data.exportado_em = new Date();
+
+              res.json(data);
+            });
+          });
+        });
+      });
+    });
+  });
+});
 
 const PORT = 3000;
 app.listen(PORT, () => {
